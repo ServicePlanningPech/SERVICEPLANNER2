@@ -2009,6 +2009,11 @@ async function getSettings() {
        if (titleElement && settings.Title) {
         titleElement.textContent = settings.Title;
        }
+       // Set license text if present in settings
+       const licenseElement = document.querySelector('#licenseText small');
+       if (licenseElement && settings.Licence) {
+        licenseElement.textContent = settings.Licence;
+       }
     })
     .catch(error => {
         alert('Get Settings Error:' + error);
