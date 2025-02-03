@@ -162,7 +162,16 @@ BASEAPIPHASE30
 change the confirm statement in the setupUploadHandlers function to use the common message confirm modal
 
 BASEAPIPHASE31
-When the service order text file is written to the publish folder we should first check to see if there is an old copy in the folder, and if so, delete it
+When the service order text file is written to the publish folder we should first check to see if there is an old copy in the folder, and if so, delete it.
+
+Change format of date in emails
+
+BASEAPIPHASE32
+Another change to service plan emails: For the email that goes to the creator of the plan only, add a line with hyperlinks to a preview version and an edit version of the published presentation. Use a sentence like this: Preview presentation here, edit presentation here. The words "here" are the hyperlinks
+
+Changes to the sendServicePlanEmails function; (1) Only send the one special email to the creator, don't include it in the "All Recipients" email list. (2) We will have a new "Admin" email, set in the settings sheet with the key "AdminEmail". Send the special email with the links to the presentation to this email, along with the creator. Also ensure this email is not sent again if it is in the "All Recipients" list. (3) Include a "try - catch" around the "Session.getActiveUser().getEmail();" statement.
+
+
 
 I will upload a new code base for my google apps script church service planning app. Then I will specify some changes.
 

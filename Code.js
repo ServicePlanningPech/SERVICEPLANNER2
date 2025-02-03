@@ -969,37 +969,127 @@ function sendServicePlanEmails(folderId) {
     throw new Error('Could not load service order');
   }
   
-  // Get all recipients
+  // Get settings for email distribution
+  const settings = getSettings();
+  const title = settings.Title || 'Service Plan';
+  const adminEmail = settings.AdminEmail;
+
+  // Get creator's email (with try-catch)
+  let creatorEmail = null;
+  try {
+    creatorEmail = Session.getActiveUser().getEmail();
+  } catch (error) {
+    debugLog("Error getting creator email: " + error.message);
+  }
+
+  // Get distribution list and additional emails
   const distributionList = getDistributionList();
   const additionalEmails = parseAdditionalEmails(serviceOrder.extraEmails);
+  
+  // Create all recipients list, excluding creator and admin
   const allRecipients = [
     ...distributionList.map(entry => entry.email),
     ...additionalEmails
-  ];
+  ].filter(email => 
+    email !== creatorEmail && 
+    email !== adminEmail
+  );
   
-  if (allRecipients.length === 0) {
+  if (allRecipients.length === 0 && !creatorEmail && !adminEmail) {
     throw new Error('No recipients found');
   }
   
-  // Get settings for email subject
-  const settings = getSettings();
-  const title = settings.Title || 'Service Plan';
-  const subject = `${title} for ${serviceOrder.date} - ${serviceOrder.type}`;
+  // Format date for subject
+  const [day, month, year] = serviceOrder.date.split('-');
+  const date = new Date(year, month - 1, day);
+  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const monthName = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+  const formattedDate = `${day}-${monthName}-${year}`;
+  const subject = `${title} for ${dayName} ${formattedDate} - ${serviceOrder.type}`;
   
-  // Create email content
-  const htmlContent = createEmailContent(serviceOrder,subject);
-  
-  // Send emails
-  MailApp.sendEmail({
-    bcc: allRecipients.join(','),
-    subject: subject,
-    htmlBody: htmlContent
-  });
+  // Get the published presentation ID
+  const publishFolder = DriveApp.getFolderById(settings.PublishId);
+  const publishedFileName = `ServicePlan-PUBLISHED-${formattedDate}-${serviceOrder.type}`;
+  debugLog(`PUBLISHEDNAME=${publishedFileName}`);
+  const files = publishFolder.getFilesByName(publishedFileName);
+  let presentationId = null;
+  if (files.hasNext()) {
+    presentationId = files.next().getId();
+  }
+
+  // Send general email to distribution list
+  if (allRecipients.length > 0) {
+    const generalHtmlContent = createEmailContent(serviceOrder, subject);
+    MailApp.sendEmail({
+      bcc: allRecipients.join(','),
+      subject: subject,
+      htmlBody: generalHtmlContent
+    });
+  }
+
+  // Send special email to creator and admin with edit links
+  if (presentationId) {
+    const previewUrl = `https://docs.google.com/presentation/d/${presentationId}/preview`;
+    const editUrl = `https://docs.google.com/presentation/d/${presentationId}/edit`;
+    const specialHtmlContent = createEmailContent(serviceOrder, subject, previewUrl, editUrl);
+    
+    // Create array of special recipients, filtering out nulls and duplicates
+    const specialRecipients = [...new Set([creatorEmail, adminEmail].filter(Boolean))];
+    
+    if (specialRecipients.length > 0) {
+      MailApp.sendEmail({
+        to: specialRecipients.join(','),
+        subject: subject,
+        htmlBody: specialHtmlContent
+      });
+    }
+  }
   
   return {
     success: true,
-    recipientCount: allRecipients.length
+    recipientCount: allRecipients.length + 2
   };
+}
+
+function createEmailContent(serviceOrder, subject, previewUrl = null, editUrl = null) {
+  let html = '<div style="font-family: Arial, sans-serif;">';
+  html += `<div style="margin-bottom: 20px; font-weight: bold;">${subject}</div>`;
+  
+  // Add service notes if they exist
+  if (serviceOrder.comments) {
+    html += `<div style="margin-bottom: 20px; font-weight: bold;">${serviceOrder.comments}</div>`;
+  }
+  
+  // Add preview/edit links if provided
+  if (previewUrl && editUrl) {
+    html += `<div style="margin-bottom: 20px;">Preview presentation <a href="${previewUrl}">here</a>, edit presentation <a href="${editUrl}">here</a>.</div>`;
+  }
+
+  // Add Order of Service header
+  html += `<div style="font-size: 18px; font-weight: bold; margin-top: 20px; margin-bottom: 10px;">Order of Service</div>`;
+
+  // Add service items table
+  html += `<table style="width: 100%; border-collapse: collapse; margin-top: 10px;"> `;
+    
+  serviceOrder.orderOfService.forEach((item, index) => {
+    const isSong = ['song', 'sing', 'hymn'].includes(item.type.toLowerCase());
+    let detail = item.detail;
+    
+    // Add hyperlink for songs
+    if (isSong && item.link) {
+      detail = `<a href="https://docs.google.com/presentation/d/${item.link}/edit" 
+                  style="color: #0066cc; text-decoration: none;">${item.detail}</a>`;
+    }
+    
+    html += `<tr>
+      <td style="padding: 8px; border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; border-left: 1px solid #dee2e6;">${index + 1}</td>
+      <td style="padding: 8px; border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6;">${item.type}</td>
+      <td style="padding: 8px; border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">${detail}</td>
+    </tr>`;
+  });
+  
+  html += '</table></div>';
+  return html;
 }
 
 // Add this function to Code.js
