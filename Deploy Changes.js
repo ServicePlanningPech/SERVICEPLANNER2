@@ -171,6 +171,26 @@ Another change to service plan emails: For the email that goes to the creator of
 
 Changes to the sendServicePlanEmails function; (1) Only send the one special email to the creator, don't include it in the "All Recipients" email list. (2) We will have a new "Admin" email, set in the settings sheet with the key "AdminEmail". Send the special email with the links to the presentation to this email, along with the creator. Also ensure this email is not sent again if it is in the "All Recipients" list. (3) Include a "try - catch" around the "Session.getActiveUser().getEmail();" statement.
 
+BASEAPIPHASE34
+
+I want to introduce code to help sharing of the Notices slides. Make the following changes:
+1. Introduce a new settings key "NoticesId" in the settings sheet. This will be the google drive folder Id of a folder to save notice slides in. If the key is not set, skip the following actions.
+2. When user selects the File Upload button on a line that specifies Item "Notices", check that the NoticesId key is set. If it is, check the NoticesId folder to see if a "ServicePlan-Notices-" file exists for the date of my plan. If it does, show a box that says "Notices for today have already been set up. Do you want to load them?". If user replies yes, set up a file link to the found file. If not just proceed with the normal file upload dialog.
+3. If the NoticesId key is set but no "ServicePlan-Notices-" file exists for the date of my plan, create the new notices file in the "NoticesId" folder, with the "ServicePlan-Notices-" format name.
+4.  Any server-side calls that need to look at settings keys must call the "getSettings" function.
+5.  Include comprehensive logging with debugLog calls, for debugging.
+6. Ensure server-side calls use the existing calling method, which involves adding an intermediate function to the "ServerCalls" file, and using the code format of the following example to make the call to that function and get the result.
+await callServerFunction(params)
+    .then(result => {
+      myResult = result;
+      })
+    .catch(error => {
+        alert('Error:' + error);
+       });
+Show me complete code for all new and changed functions. Pause after each one so that I can verify before asking you to proceed.
+
+BASEAPIPHASE35
+
 
 
 I will upload a new code base for my google apps script church service planning app. Then I will specify some changes.

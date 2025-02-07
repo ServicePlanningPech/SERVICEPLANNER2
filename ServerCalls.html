@@ -301,13 +301,44 @@ function getHowToContent(HowToId) {
   });
 }
 
+function checkNoticesFile(planDate) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(success)
+      .withFailureHandler(failure)
+      .checkNoticesFile(planDate);
+
+    function success(result) {
+      resolve(result);
+    }
+    function failure(error) {
+      reject(error);
+    }
+  });
+}
+
+function createNoticesFile(planDate) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(success)
+      .withFailureHandler(failure)
+      .createNoticesFile(planDate);
+
+    function success(result) {
+      resolve(result);
+    }
+    function failure(error) {
+      reject(error);
+    }
+  });
+}
+
 
 /* Here is a sample of how to call these functions
 await getSlideCount(presentationId)
     .then(result => {
       slideCount = result;
-      alert('Result:' + slideCount);
-      })
+       })
     .catch(error => {
         alert('Error:' + error);
        }); 

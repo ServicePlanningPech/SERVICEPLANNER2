@@ -395,17 +395,21 @@ function showConfirmModal(options) {
     title = 'Confirm',
     message = 'Are you sure?',
     buttonText = 'Confirm',
+    cancelButtonText = 'Cancel', // Add this parameter
     buttonClass = 'btn-primary',
-    onConfirm = () => {}
+    onConfirm = () => {},
+    onCancel = () => {} // Add this parameter
   } = options;
 
   const modal = document.getElementById('confirmModal');
   const confirmBtn = document.getElementById('confirmModalBtn');
+  const cancelBtn = modal.querySelector('.btn-secondary');
   
   // Set modal content
   document.getElementById('confirmModalTitle').textContent = title;
   document.getElementById('confirmModalBody').textContent = message;
   confirmBtn.textContent = buttonText;
+  cancelBtn.textContent = cancelButtonText;
   
   // Update button class
   confirmBtn.className = `btn ${buttonClass}`;
@@ -414,7 +418,10 @@ function showConfirmModal(options) {
   const newConfirmBtn = confirmBtn.cloneNode(true);
   confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
   
-  // Add new event listener
+  const newCancelBtn = cancelBtn.cloneNode(true);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+  
+  // Add new event listeners
   newConfirmBtn.addEventListener('click', async () => {
     try {
       await onConfirm();
@@ -424,6 +431,12 @@ function showConfirmModal(options) {
       console.error('Error in confirmation handler:', error);
       alert('An error occurred: ' + error.message);
     }
+  });
+
+  newCancelBtn.addEventListener('click', () => {
+    onCancel();
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
   });
   
   // Show modal
@@ -817,6 +830,59 @@ function setupUploadHandlers() {
       const row = e.target.closest('tr');
       const typeCell = row.querySelector('.item-type');
       
+      // Check for notices first
+      if (typeCell && typeCell.textContent.trim().toLowerCase() === 'notices') {
+        debugLog("Notices item detected, checking for existing file");
+        
+        try {
+          const planTitle = document.getElementById('planTitle').textContent;
+          const dateMatch = planTitle.match(/(\d{2}-\d{2}-\d{4})/);
+          if (!dateMatch) {
+            throw new Error('Could not determine plan date');
+          }
+          
+          const planDate = dateMatch[1];
+          const noticesResult = await checkNoticesFile(planDate);
+          
+          if (noticesResult.exists) {
+            showConfirmModal({
+              title: 'Existing Notices Found',
+              message: 'Notices for today have already been set up. Do you want to load them?',
+              buttonText: 'Yes',
+              cancelButtonText: 'No',
+              buttonClass: 'btn-primary',
+              onConfirm: async () => {
+                typeCell.dataset.id = noticesResult.fileId;
+                typeCell.classList.add('song-link');
+                const beforeCheckbox = row.querySelector('.slide-before-checkbox');
+                const afterCheckbox = row.querySelector('.slide-after-checkbox');
+                beforeCheckbox.disabled = false;
+                afterCheckbox.disabled = false;
+                beforeCheckbox.style.visibility = 'visible';
+                afterCheckbox.style.visibility = 'visible';
+                
+                const thumbnails = await getThumbnailUrls(noticesResult.fileId);
+                if (thumbnails) {
+                  const slidesCell = row.querySelector('.item-slides');
+                  const turlsCell = row.querySelector('.item-tUrls');
+                  slidesCell.textContent = thumbnails.length;
+                  turlsCell.textContent = JSON.stringify(thumbnails);
+                  refreshGallery();
+                  triggerAutoSave();
+                }
+              },
+              onCancel: () => {
+                activeRow = row;
+                showUploadTypeModal();
+              }
+            });
+            return;
+          }
+        } catch (error) {
+          debugLog("Error checking notices: " + error.message);
+        }
+      }
+      
       // Check if row already has a link
       if (typeCell.dataset.id) {
         showConfirmModal({
@@ -856,19 +922,18 @@ function showUploadTypeModal() {
 
 
 
-function handleUploadTypeSelection(e) {
+async function handleUploadTypeSelection(e) {
   const button = e.currentTarget;
   currentUploadType = button.dataset.uploadType;
   
   // Close upload type modal
   const typeModal = bootstrap.Modal.getInstance(document.getElementById('uploadTypeModal'));
   typeModal.hide();
-
+  
+  // Proceed with upload handling
   if (currentUploadType === 'slidemaker') {
-    // Create new presentation directly
     handleSlideMakerUpload();
   } else {
-    // Show file upload modal with appropriate settings
     configureFileUploadModal();
   }
 }
@@ -944,33 +1009,67 @@ async function handleFileUpload() {
 //HERE
 async function handleSlideMakerUpload() {
   const itemDetail = activeRow.querySelector('.item-detail').textContent.trim();
-  const name = itemDetail || 'New Presentation';
+  const typeCell = activeRow.querySelector('.item-type');
+  const isNotices = typeCell.textContent.trim().toLowerCase() === 'notices';
+  const name = itemDetail || (isNotices ? 'Notices' : 'New Presentation');
   
   try {
-    // First get available templates
-         await getSlideTemplates()
-         .then(result => {
-          templates = result;
-         })
-        .catch(error => {
-          handleUploadError(error);
-        });   
+    // Handle notices creation
+    if (isNotices) {
+      debugLog("Creating new notices presentation");
+      
+      // Get current service plan date
+      const planTitle = document.getElementById('planTitle').textContent;
+      const dateMatch = planTitle.match(/(\d{2}-\d{2}-\d{4})/);
+      if (!dateMatch) {
+        throw new Error('Could not determine plan date');
+      }
+      
+      const planDate = dateMatch[1];
+      
+      // Check again if notices should be created in NoticesId folder
+      const noticesResult = await checkNoticesFile(planDate);
+      if (!noticesResult.reason || noticesResult.reason !== "NoticesId not configured") {
+        // Create in NoticesId folder if it's configured
+        debugLog("Creating notices in NoticesId folder");
+        await createNoticesFile(planDate)
+          .then(result => {
+            if (result.success) {
+              handleUploadSuccess(result);
+            } else {
+              throw new Error('Failed to create notices file');
+            }
+          })
+          .catch(error => {
+            handleUploadError(error);
+          });
+        return;
+      }
+      
+      // If we get here, either NoticesId isn't configured or user chose not to use existing notices
+      debugLog("Creating notices in local plan folder");
+    }
+    
+    // Normal slide creation for non-notices items or local notices
+    const templates = await getSlideTemplates()
+      .catch(error => {
+        handleUploadError(error);
+      });
     
     // Show template selection modal if templates exist
     if (templates && templates.length > 0) {
       await showTemplateSelectionModal(templates, name);
     } else {
       // If no templates, create blank presentation
-      
       await createSlidePresentation(name, selectedPlanId, null)
-         .then(result => {
+        .then(result => {
           handleSlideMakerResult(result);
-         })
+        })
         .catch(error => {
           handleUploadError(error);
-        }); 
-      
+        });
     }
+    
   } catch (error) {
     handleUploadError(error);
   }

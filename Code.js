@@ -1106,6 +1106,95 @@ function getHowToContent(fileId) {
   }
 }
 
+function checkNoticesFile(planDate) {
+  debugLog(`Checking for notices file for date: ${planDate}`);
+  
+  try {
+    // Get settings
+    const settings = getSettings();
+    const noticesId = settings.NoticesId;
+    
+    if (!noticesId) {
+      debugLog("NoticesId not set in settings");
+      return { exists: false, reason: "NoticesId not configured" };
+    }
+    
+    // Get notices folder
+    const noticesFolder = DriveApp.getFolderById(noticesId);
+    if (!noticesFolder) {
+      debugLog("Could not find notices folder");
+      return { exists: false, reason: "Notices folder not found" };
+    }
+    
+    // Search for notice file with matching date
+    const noticeFileName = `ServicePlan-Notices-${planDate}`;
+    const files = noticesFolder.getFilesByName(noticeFileName);
+    
+    if (files.hasNext()) {
+      const file = files.next();
+      debugLog(`Found existing notices file: ${file.getId()}`);
+      return {
+        exists: true,
+        fileId: file.getId(),
+        url: `https://docs.google.com/presentation/d/${file.getId()}/preview`
+      };
+    }
+    
+    debugLog("No existing notices file found");
+    return { exists: false };
+    
+  } catch (error) {
+    debugLog(`Error checking notices file: ${error.message}`);
+    throw new Error(`Failed to check notices file: ${error.message}`);
+  }
+}
+
+function createNoticesFile(planDate) {
+  debugLog(`Creating new notices file for date: ${planDate}`);
+  
+  try {
+    // Get settings
+    const settings = getSettings();
+    const noticesId = settings.NoticesId;
+    
+    if (!noticesId) {
+      debugLog("NoticesId not set in settings");
+      throw new Error("Notices folder not configured in settings");
+    }
+    
+    // Get notices folder
+    const noticesFolder = DriveApp.getFolderById(noticesId);
+    if (!noticesFolder) {
+      debugLog("Could not find notices folder");
+      throw new Error("Notices folder not found");
+    }
+    
+    // Create new presentation
+    const fileName = `ServicePlan-Notices-${planDate}`;
+    const presentation = SlidesApp.create(fileName);
+    const presentationFile = DriveApp.getFileById(presentation.getId());
+    
+    // Move to notices folder
+    presentationFile.moveTo(noticesFolder);
+    
+    debugLog(`Created new notices file: ${presentation.getId()}`);
+    
+    // Get thumbnails
+    const thumbnailUrls = getThumbnailUrls(presentation.getId());
+    
+    return {
+      success: true,
+      fileId: presentation.getId(),
+      url: `https://docs.google.com/presentation/d/${presentation.getId()}/preview`,
+      thumbnailUrls: thumbnailUrls
+    };
+    
+  } catch (error) {
+    debugLog(`Error creating notices file: ${error.message}`);
+    throw new Error(`Failed to create notices file: ${error.message}`);
+  }
+}
+
 
 
 
