@@ -368,32 +368,67 @@ function getSlideTemplates() {
 }
 
 function createSlidePresentation(name, folderId, templateId = null) {
-  const folder = DriveApp.getFolderById(folderId);
-  let presentation;
+  debugLog(`Creating slide presentation: name=${name}, folder=${folderId}, template=${templateId}`);
   
-  if (templateId) {
-    // Copy from template
-    const templateFile = DriveApp.getFileById(templateId);
-    const newFile = templateFile.makeCopy(name);
-    newFile.moveTo(folder);
-  
-    presentation = SlidesApp.openById(newFile.getId());
-  } else {
-    // Create new blank presentation
-  
-    presentation = SlidesApp.create(name);
-    const presentationFile = DriveApp.getFileById(presentation.getId());
-    presentationFile.moveTo(folder);
-  }
+  try {
+    const folder = DriveApp.getFolderById(folderId);
+    const settings = getSettings();
+    const blankTemplateId = settings.BlankTemplateId;
+    let presentation;
+    let presentationFile;
+    
+    if (templateId) {
+      // Use specified template if provided
+      debugLog(`Using specified template: ${templateId}`);
+      const templateFile = DriveApp.getFileById(templateId);
+      presentationFile = templateFile.makeCopy(name);
+      presentationFile.moveTo(folder);
+      presentation = SlidesApp.openById(presentationFile.getId());
+    } else if (blankTemplateId) {
+      // Use blank template from settings
+      debugLog(`Using blank template from settings: ${blankTemplateId}`);
+      try {
+        const templateFile = DriveApp.getFileById(blankTemplateId);
+        if (!templateFile) {
+          debugLog("Blank template file not found, falling back to creating new presentation");
+          presentation = SlidesApp.create(name);
+          presentationFile = DriveApp.getFileById(presentation.getId());
+        } else {
+          debugLog("Creating copy of blank template");
+          presentationFile = templateFile.makeCopy(name);
+          presentation = SlidesApp.openById(presentationFile.getId());
+        }
+      } catch (error) {
+        debugLog(`Error using blank template: ${error.message}, falling back to creating new presentation`);
+        presentation = SlidesApp.create(name);
+        presentationFile = DriveApp.getFileById(presentation.getId());
+      }
+    } else {
+      // Create new blank presentation
+      debugLog("No templates specified, creating new presentation");
+      presentation = SlidesApp.create(name);
+      presentationFile = DriveApp.getFileById(presentation.getId());
+    }
+    
+    // Move to destination folder if needed
+    if (!templateId) { // Skip if using specified template as it's already moved
+      debugLog("Moving presentation to destination folder");
+      presentationFile.moveTo(folder);
+    }
 
-  debugLog(`SLIDEMAKER URL=${presentation.getId()}`);
-  
-  return {
-    success: true,
-    fileId: presentation.getId(),
-    editUrl: `https://docs.google.com/presentation/d/${presentation.getId()}/edit`,
-    thumbnailUrls: null
-  };
+    debugLog(`Created presentation with ID: ${presentation.getId()}`);
+    
+    return {
+      success: true,
+      fileId: presentation.getId(),
+      editUrl: `https://docs.google.com/presentation/d/${presentation.getId()}/edit`,
+      thumbnailUrls: null
+    };
+    
+  } catch (error) {
+    debugLog(`Error creating slide presentation: ${error.message}`);
+    throw new Error(`Failed to create slide presentation: ${error.message}`);
+  }
 }
 
 // Modified getSongList to use settings
@@ -1156,6 +1191,7 @@ function createNoticesFile(planDate) {
     // Get settings
     const settings = getSettings();
     const noticesId = settings.NoticesId;
+    const blankTemplateId = settings.BlankTemplateId;
     
     if (!noticesId) {
       debugLog("NoticesId not set in settings");
@@ -1171,10 +1207,37 @@ function createNoticesFile(planDate) {
     
     // Create new presentation
     const fileName = `ServicePlan-Notices-${planDate}`;
-    const presentation = SlidesApp.create(fileName);
-    const presentationFile = DriveApp.getFileById(presentation.getId());
+    let presentation;
+    let presentationFile;
+    
+    if (blankTemplateId) {
+      debugLog(`Using blank template with ID: ${blankTemplateId}`);
+      try {
+        // Get template file
+        const templateFile = DriveApp.getFileById(blankTemplateId);
+        if (!templateFile) {
+          debugLog("Template file not found, falling back to creating new presentation");
+          presentation = SlidesApp.create(fileName);
+          presentationFile = DriveApp.getFileById(presentation.getId());
+        } else {
+          // Make a copy of the template
+          debugLog("Creating copy of template file");
+          presentationFile = templateFile.makeCopy(fileName);
+          presentation = SlidesApp.openById(presentationFile.getId());
+        }
+      } catch (error) {
+        debugLog(`Error using template: ${error.message}, falling back to creating new presentation`);
+        presentation = SlidesApp.create(fileName);
+        presentationFile = DriveApp.getFileById(presentation.getId());
+      }
+    } else {
+      debugLog("No blank template specified, creating new presentation");
+      presentation = SlidesApp.create(fileName);
+      presentationFile = DriveApp.getFileById(presentation.getId());
+    }
     
     // Move to notices folder
+    debugLog("Moving presentation to notices folder");
     presentationFile.moveTo(noticesFolder);
     
     debugLog(`Created new notices file: ${presentation.getId()}`);

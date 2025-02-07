@@ -191,7 +191,12 @@ Show me complete code for all new and changed functions. Pause after each one so
 
 BASEAPIPHASE35
 
+I want to change the functions "createNoticesFile" and "createSlidePresentation" in code.gs. Both of these create a new blank google slides presentation. But instead of creating a new one, if the settings sheet has a key of "BlankTemplateId" I want to use the file Id specified in this key as a template to copy. So the logic is:
+a. If BlankTemplateId not specified, continue woth current logic of careting a new slide presentation file. 
+b. If BlankTemplateId is specified, take a copy of the template file, naming it to the file name we want, and moving it to the folder we want. Include comprehensive logging with debugLog calls, for debugging.
 
+(PLanner Tools change)
+Google has to ask the user to authorise script on first use. I want to make this more straightforward. Add some code in a try..catch structure to see if authorisation will be needed. If so, initially create the Planner Tools menu with one menu option "Click for first time Authorisation". When the user clicks, repeat the test code without the try..catch to get google to authorise. After that,  create the real Planner tools menu
 
 I will upload a new code base for my google apps script church service planning app. Then I will specify some changes.
 
