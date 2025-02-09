@@ -1,20 +1,17 @@
 function doGet(e) {
-  debugLog("Starting doGet()");
-  return HtmlService.createTemplateFromFile('main')
+   return HtmlService.createTemplateFromFile('main')
     .evaluate()
     .setTitle('PECH Service Planner')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function include(filename) {
-  debugLog("Including file: " + filename);
-  return HtmlService.createHtmlOutputFromFile(filename)
+   return HtmlService.createHtmlOutputFromFile(filename)
       .getContent();
 }
 
 function getScriptUrl() {
-  debugLog("Getting script URL");
-  return ScriptApp.getService().getUrl();
+   return ScriptApp.getService().getUrl();
 }
 
 function getServicePlansFolder() {
@@ -38,16 +35,18 @@ function getServicePlansFolder() {
     servicePlanFolder = DriveApp.createFolder(folderName);
     
     // Set sharing permissions - anyone with link can view
-    try {
-      servicePlanFolder.setSharing(
-        DriveApp.Access.ANYONE_WITH_LINK, 
-        DriveApp.Permission.VIEW
-      );
-      
-      debugLog("Set sharing permissions for new folder");
-    } catch (error) {
-      debugLog("Error setting folder permissions: " + error.message);
-      throw new Error("Failed to set folder permissions: " + error.message);
+    if (getSettings().SharePlans === "yes") {
+      try {
+        servicePlanFolder.setSharing(
+          DriveApp.Access.ANYONE_WITH_LINK, 
+          DriveApp.Permission.VIEW
+        );
+        
+        debugLog("Set sharing permissions for new folder");
+      } catch (error) {
+        debugLog("Error setting folder permissions: " + error.message);
+        throw new Error("Failed to set folder permissions: " + error.message);
+      }
     }
   }
   
@@ -463,7 +462,7 @@ function getSongList() {
 }
 
 function debugLog(message) {
-  
+    
   try {
   //  var lock = LockService.getScriptLock(); 
   //  lock.waitLock(30000); // Wait up to 30 seconds for a lock.

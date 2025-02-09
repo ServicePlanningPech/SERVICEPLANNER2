@@ -198,6 +198,9 @@ b. If BlankTemplateId is specified, take a copy of the template file, naming it 
 (PLanner Tools change)
 Google has to ask the user to authorise script on first use. I want to make this more straightforward. Add some code in a try..catch structure to see if authorisation will be needed. If so, initially create the Planner Tools menu with one menu option "Click for first time Authorisation". When the user clicks, repeat the test code without the try..catch to get google to authorise. After that,  create the real Planner tools menu
 
+
+Create a static web page containing a comprehensive privacy policy for the church service planning app, which is called PLANNER2. The app needs access to users google drive to create, edit and delete folders and files. It needs to obtain user email address for purpose of sending service plan details. No user folder or files are shared without explicit permission of user. Please include any other factors you can deduce from the uploaded applocation code.
+
 I will upload a new code base for my google apps script church service planning app. Then I will specify some changes.
 
 
