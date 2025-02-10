@@ -11,11 +11,6 @@
         "userSymbol": "Slides",
         "serviceId": "slides",
         "version": "v1"
-      },
-      {
-        "userSymbol": "DriveActivity",
-        "serviceId": "driveactivity",
-        "version": "v2"
       }
     ]
   },

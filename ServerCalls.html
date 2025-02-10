@@ -342,6 +342,15 @@ function createNoticesFile(planDate) {
   });
 }
 
+function checkAuthorization() {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
+      .checkUserAuthorization();
+  });
+}
+
 
 /* Here is a sample of how to call these functions
 await getSlideCount(presentationId)

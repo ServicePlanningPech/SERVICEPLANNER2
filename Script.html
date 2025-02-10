@@ -24,17 +24,40 @@ let isNameSearch = true;
 /* --------------------------------------------------------------------------------------------------- */
 //document.addEventListener('DOMContentLoaded', function() { 
 window.onload = async function() {  
-  showToast("Initializing Service Planner.....",5);
-  getSettings();
-  updateStorageInfo();
-  adjustTableForMobile(); 
-  loadServicePlans(); 
-  initializeEventListeners(); 
-  loadSongs(); 
-  initializeModalAccessibility();
-  initializeServiceNotes(); 
-  initializeActionButtons();
-//});
+  // Show initial loading message
+  showToast("Checking authorization...", 5);
+  
+  try {
+    // Check authorization first
+    const authResult = await checkAuthorization();
+    if (!authResult.authorized) {
+      document.body.innerHTML = `
+        <div class="container mt-5">
+          <div class="alert alert-danger">
+            <h3>Access Denied</h3>
+            <p>${authResult.message}</p>
+            <p>Please contact your administrator for access.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    // Continue with normal initialization if authorized
+    showToast("Initializing Service Planner.....", 5);
+    getSettings();
+    updateStorageInfo();
+    adjustTableForMobile(); 
+    loadServicePlans(); 
+    initializeEventListeners(); 
+    loadSongs(); 
+    initializeModalAccessibility();
+    initializeServiceNotes(); 
+    initializeActionButtons();
+  } catch (error) {
+    console.error("Initialization error:", error);
+    showToast("Error initializing application: " + error.message, 5);
+  }
 };
 
 function debugLog(message) {

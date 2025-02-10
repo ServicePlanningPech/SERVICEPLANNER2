@@ -201,6 +201,11 @@ Google has to ask the user to authorise script on first use. I want to make this
 
 Create a static web page containing a comprehensive privacy policy for the church service planning app, which is called PLANNER2. The app needs access to users google drive to create, edit and delete folders and files. It needs to obtain user email address for purpose of sending service plan details. No user folder or files are shared without explicit permission of user. Please include any other factors you can deduce from the uploaded applocation code.
 
+
+BASEAPIPHASE36
+
+On launching the app I want to check their email address against the list of allowed emails in column 4 of the Service Planner Email distribution list. Only emails that have the checkbox ticked in this column are allowed to use the planner
+
 I will upload a new code base for my google apps script church service planning app. Then I will specify some changes.
 
 

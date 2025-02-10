@@ -1,8 +1,66 @@
 function doGet(e) {
-   return HtmlService.createTemplateFromFile('main')
+  const authResult = checkUserAuthorization();
+  
+  if (!authResult.authorized) {
+    return HtmlService.createHtmlOutput(`
+      <h3>Access Denied</h3>
+      <p>${authResult.message}</p>
+      <p>Please contact your administrator for access.</p>
+    `)
+    .setTitle('PECH Service Planner - Access Denied');
+  }
+   
+  return HtmlService.createTemplateFromFile('main')
     .evaluate()
     .setTitle('PECH Service Planner')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function checkUserAuthorization() {
+  try {
+    // Get user's email
+    const userEmail = Session.getActiveUser().getEmail();
+    if (!userEmail) {
+      return {
+        authorized: false,
+        message: "Could not determine user email"
+      };
+    }
+
+    // Get settings to find distribution list
+    const settings = getSettings();
+    const emailDistId = settings.EmailDistId;
+    
+    if (!emailDistId) {
+      return {
+        authorized: false,
+        message: "Email distribution list not configured in settings"
+      };
+    }
+    
+    // Get distribution list sheet
+    const sheet = SpreadsheetApp.openById(emailDistId).getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+    
+    // Skip header row, look for authorized emails in column 4 (index 3)
+    const authorizedEmails = data.slice(1)
+      .filter(row => row[2] === true && row[3] === true)  // Check both distribution and authorization checkboxes
+      .map(row => row[1].toLowerCase());  // Get email addresses and convert to lowercase
+    
+    // Check if user's email is authorized
+    const isAuthorized = authorizedEmails.includes(userEmail.toLowerCase());
+    
+    return {
+      authorized: isAuthorized,
+      message: isAuthorized ? "Authorized" : "You are not authorized to use the Service Planner"
+    };
+  } catch (error) {
+    debugLog("Authorization check error: " + error.message);
+    return {
+      authorized: false,
+      message: "Error checking authorization: " + error.message
+    };
+  }
 }
 
 function include(filename) {
