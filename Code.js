@@ -44,7 +44,7 @@ function checkUserAuthorization() {
     
     // Skip header row, look for authorized emails in column 4 (index 3)
     const authorizedEmails = data.slice(1)
-      .filter(row => row[2] === true && row[3] === true)  // Check both distribution and authorization checkboxes
+      .filter(row => row[3] === true)  // Check authorization checkboxes
       .map(row => row[1].toLowerCase());  // Get email addresses and convert to lowercase
     
     // Check if user's email is authorized
@@ -996,7 +996,7 @@ function getDistributionList() {
     
     // Skip header row, filter for checked entries
     return data.slice(1)
-      .filter(row => row[2] === true)  // Only get rows where checkbox is checked
+      .filter(row => row[2] === true || row[3] === true)  // Get rows where either column 3 or 4 is checked
       .map(row => ({
         name: row[0],
         email: row[1]
