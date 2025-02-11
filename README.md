@@ -1,6 +1,6 @@
 # Service Planner2
 
-A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members.
+A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members. The Planner helps to construct a service presentation in the form of a google slide presentation, combining song lyrics, sermon notes, scriptures and any other required slides. The 'published' presentation can be projected in a number of ways. A very basic solution would be to use a "Chromecast" device connected to a prpjector and linked with a smartphone, to display the slides directly from Google Drive. At our church we synchronise the published plans with a PC running  'vMix' video production and streaming software.  
 
 ## Features
 
@@ -40,7 +40,7 @@ A Google Apps Script web application for planning and managing church services. 
 1. Google Workspace (formerly G Suite) account or standard Google account
 2. Permissions to create and execute Google Apps Script projects
 3. Google Drive storage space for service plans and presentations
-4. Access to Google Slides and Googl Drive API's
+4. Access to Google Slides and Google Drive API's. This will require setting up the app as a project in Google Cloud Platform.
 
 ## Installation
 
@@ -54,18 +54,46 @@ A Google Apps Script web application for planning and managing church services. 
    - `ServerCalls.html` (server communication functions)
    - `HowTo.html` (help system)
 
-3. Enable required Google Services:
-   - Google Drive API
-   - Google Slides API
-   - Google Drive Activity API
+3. In the Apps SCript Editor Enable required Google Services:
+   - Drive 
+   - Slides
 
-4. Deploy as a web application:
+4. Set up the project in Google CLoud Console
+* Sign in to Google Cloud Console (https://console.cloud.google.com)
+* Create a new project or select an existing one
+* Note down the Project ID - you'll need this later
+* In Cloud Console, go to "APIs & Services" > "Library"
+* Search for and enable these APIs:
+  * Google Drive API
+  * Google Slides API
+
+**OAuth Consent Screen Setup**
+* Go to "APIs & Services" > "OAuth consent screen" > Data Access > Add or Remove Scopes
+* Add these scopes:
+  *  ...auth/presentations.readonly
+  *  ...auth/userinfo.email
+  
+**Create OAuth 2.0 Credentials**
+* Go to "APIs & Services" > "Credentials"
+* Click "Create Credentials" > "OAuth client ID"
+* Choose "Web application" as application type
+* Set name for OAuth 2.0 client ID
+* Add authorized redirect URIs:
+  * Add your Apps Script deployment URL
+
+## Apps Script Project Configuration
+* Open your Apps Script project
+* Click "Project Settings" (gear icon)
+* Under "Google Cloud Platform (GCP) Project":
+  * Link to the project you created using Project Number
+  * 
+5. Deploy as a web application:
    - Click "Deploy" > "New deployment"
    - Choose "Web app"
    - Set execution to "Run as user accessing the web app"
    - Set access to "Anyone with Google Account"
    - Click "Deploy"
-
+   - 
 ### Initial Setup
 
 1. Set up required folders in Google Drive:
@@ -170,27 +198,6 @@ Common issues and solutions:
    - Verify folder permissions
    - Check presentation links
    - Confirm email settings
-
-## Support
-
-For issues and support:
-1. Check debug logs in "Service Planner2 Debug Log" spreadsheet
-2. Review sharing permissions
-3. Verify Google Apps Script quotas and limits
-4. Contact system administrator
-
-## Contributing
-
-Guidelines for contributing:
-1. Fork the repository
-2. Create feature branch
-3. Submit pull request with detailed description
-4. Follow existing code style
-5. Include documentation updates
-
-## License
-
-[Your chosen license information here]
 
 ## Acknowledgments
 
