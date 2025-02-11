@@ -1,6 +1,6 @@
-# Church Service Planner
+# Service Planner2
 
-A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members.
+A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members. The Planner helps to construct a service presentation in the form of a google slide presentation, combining song lyrics, sermon notes, scriptures and any other required slides. The 'published' presentation can be projected in a number of ways. A very basic solution would be to use a "Chromecast" device connected to a projector and linked with a smartphone, to display the slides directly from Google Drive. At our church we synchronise the published plans with a PC running  'vMix' video production and streaming software.  
 
 ## Features
 
@@ -13,6 +13,7 @@ A Google Apps Script web application for planning and managing church services. 
 
 ### Content Management
 - Song/hymn database integration
+- AI Searching for songs by Bible Reference or theme
 - PowerPoint and image file upload capabilities
 - Google Slides integration
 - Slide template system
@@ -24,14 +25,14 @@ A Google Apps Script web application for planning and managing church services. 
 - Automatic compilation of all service elements into a single presentation
 - Email distribution to team members
 - Configurable sharing permissions
-- Service plan status tracking
+  
 
 ### User Interface
-- Responsive design for desktop and mobile devices
+- Responsive design for desktop and tablets
 - Intuitive drag-and-drop interface
-- Real-time preview of slides
-- Context menus for quick actions
-- Comprehensive help system
+- Real-time preview of slides in a slide gallery
+- Context menus for quick isertion of service items
+- "How-to" help system
 - Progress indicators for long operations
 
 ## Prerequisites
@@ -39,7 +40,7 @@ A Google Apps Script web application for planning and managing church services. 
 1. Google Workspace (formerly G Suite) account or standard Google account
 2. Permissions to create and execute Google Apps Script projects
 3. Google Drive storage space for service plans and presentations
-4. Access to Google Slides API
+4. Access to Google Slides and Google Drive API's. This will require setting up the app as a project in Google Cloud Platform.
 
 ## Installation
 
@@ -53,46 +54,76 @@ A Google Apps Script web application for planning and managing church services. 
    - `ServerCalls.html` (server communication functions)
    - `HowTo.html` (help system)
 
-3. Enable required Google Services:
-   - Google Drive API
-   - Google Slides API
-   - Google Drive Activity API
+3. In the Apps SCript Editor Enable required Google Services:
+   - Drive 
+   - Slides
 
-4. Deploy as a web application:
+4. Set up the project in Google CLoud Console
+* Sign in to Google Cloud Console (https://console.cloud.google.com)
+* Create a new project or select an existing one
+* Note down the Project ID - you'll need this later
+* In Cloud Console, go to "APIs & Services" > "Library"
+* Search for and enable these APIs:
+  * Google Drive API
+  * Google Slides API
+
+**OAuth Consent Screen Setup**
+* Go to "APIs & Services" > "OAuth consent screen" > Data Access > Add or Remove Scopes
+* Add these scopes:
+  *  ...auth/presentations.readonly
+  *  ...auth/userinfo.email
+  
+**Create OAuth 2.0 Credentials**
+* Go to "APIs & Services" > "Credentials"
+* Click "Create Credentials" > "OAuth client ID"
+* Choose "Web application" as application type
+* Set name for OAuth 2.0 client ID
+* Add authorized redirect URIs:
+  * Add your Apps Script deployment URL
+
+## Apps Script Project Configuration
+* Open your Apps Script project
+* Click "Project Settings" (gear icon)
+* Under "Google Cloud Platform (GCP) Project":
+  * Link to the project you created using Project Number
+  * 
+5. Deploy as a web application:
    - Click "Deploy" > "New deployment"
    - Choose "Web app"
    - Set execution to "Run as user accessing the web app"
    - Set access to "Anyone with Google Account"
    - Click "Deploy"
-
-## Configuration
-
+   - 
 ### Initial Setup
 
-1. Create a settings spreadsheet named "ServicePlanner2Settings" with these key settings:
-   - Title: Application title
+1. Set up required folders in Google Drive:
+   - SERVICE PLANS (created automatically)
+   - Song Database folder. Add your song lyrics as google slide files
+   - Templates folder
+   - Published Plans folder
+   - Notices folder
+
+2. Create a settings spreadsheet named "ServicePlanner2Settings" with these key settings:
+   - Title: Title you want to show
    - SongDatabaseId: Folder ID containing song presentations
    - SlideTemplateId: Folder ID containing slide templates
    - BlankTemplateId: File ID of blank template
    - PublishId: Folder ID for published presentations
    - EmailDistId: Spreadsheet ID for email distribution list
-   - NoticesId: Folder ID for notices
+   - NoticesId: Folder ID for notices. Notices get saved in this folder, which should be a sub-folder of the PublishId
    - Debug: Debug logging setting (on/off)
-   - SharePlans: Auto-share setting (yes/no)
+   - SharePlans: Auto-share setting (yes/no). Set to yes to allow email recipients to click song hyperlinks
    - AdminEmail: Administrator email address
-
-2. Set up required folders in Google Drive:
-   - SERVICE PLANS (created automatically)
-   - Song Database folder
-   - Templates folder
-   - Published Plans folder
-   - Notices folder
+   - HoToId: Id of a google help text file with How-To content from "ServicePlannerHowTo.txt" in this repo
+   - Licence: A Licence string showing your CCL or other licence, if you are showing copyright lyrics
+   - apiKey: Your OpenAI Api key for advanced song search, if required. The search uses gpt-4o-mini. Note, it only returns results of songs that are in your song database.
+   - ContextMenu: The service items you want to appear in the right-click dropdown menu. For example Welcome,Notices,Sing,Hymn,Reading,Prayer,Sermon,Message,Lord's Supper,Communion
 
 3. Create email distribution list spreadsheet with columns:
    - Name
    - Email
-   - Distribution Checkbox
-   - Authorization Checkbox
+   - Distribution Checkbox. These are your ministry team members who need to know your service plan
+   - Authorization Checkbox. These are people who are allowed to create service plans.
 
 ### Security Configuration
 
@@ -167,27 +198,6 @@ Common issues and solutions:
    - Verify folder permissions
    - Check presentation links
    - Confirm email settings
-
-## Support
-
-For issues and support:
-1. Check debug logs in "Service Planner2 Debug Log" spreadsheet
-2. Review sharing permissions
-3. Verify Google Apps Script quotas and limits
-4. Contact system administrator
-
-## Contributing
-
-Guidelines for contributing:
-1. Fork the repository
-2. Create feature branch
-3. Submit pull request with detailed description
-4. Follow existing code style
-5. Include documentation updates
-
-## License
-
-[Your chosen license information here]
 
 ## Acknowledgments
 
