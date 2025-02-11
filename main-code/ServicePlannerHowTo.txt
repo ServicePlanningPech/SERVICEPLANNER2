@@ -1,0 +1,185 @@
+
+## How to Start the Planner
+1. Open a browser tab and use address **planner.pech.co.uk**
+2. The planner will work with most browsers. For iPad/Mac devices the Safari browser is advised.
+---
+
+## How to Show the List of Plans
+1. When you start the Planner, your list of plans will be displayed. 
+2. When you are viewing a specific plan, click the **Plan List** button to view your plan list again. 
+---
+
+## How to Check You have enough storage space for new plans.
+1. Your plans are stored in your Google Drive storage.
+2. At the bottom of the plan list, there is a progress bar. This bar shows you how much of your Google Drive storage you have used.
+---
+
+## How to view an existing plan
+1. On the Plan List page, scroll down to any plan and double click
+2. Alternatively select the row and click the **Edit Plan** button.
+---
+
+## How to start a new plan
+1. On the Plan List page, click the **New Plan** button.
+2. The **Create Plan** menu will appear.
+3. Click in the **Date** column to select a date for your plan.
+4. Choose the type of plan: **Morning**, **Evening**, or **Other**.
+5. For **Other** special services, type the name of the special service and click **Create Plan**.
+---
+
+## How to enter items for your service
+1. Move your cursor to the **Item** column and right-click the mouse. The Context menu will appear. Select the required item from the menu.
+2. Alternatively, type the item directly in the **Item** column. 
+3. If the item is a song, the **Song List** window will automatically show.
+---
+
+## How to search for a song in the Song List
+1. The **Song List** window shows all the songs in the **Song Database**, in alphabetic order. 
+2. Use the search box to type any part of the song name. This can be the start of the name or any word in it.
+3. As you type, the Song List will filter to show just the matching songs.
+4. If you already had text in the **Description** column, the song list will just show songs that match the description. If you want to see all songs again, just clear the Song list search input box.
+5. When the song list appears, select the desired song by clicking on it, then click the **Select Song** button.
+6. You can also select a song with a double-click.
+7. To preview a song before selecting it, click on the "eyeballs" icon to the right of the song name.
+---
+
+## How to Search for songs by Bible Reference
+1. Use the Bible reference search to find songs related to a specific scripture. For example, typing "Isaiah 53" will return songs related to that passage. 
+---
+
+## How to Search for Songs by Theme
+1. Search for songs by entering a theme keyword or phrase (e.g., "Trust and obey"). This can include doctrinal words, Christian life topics, or other themes. The app will suggest related songs. 
+---
+
+## How to Adjust the Number of Search Results for Bible Ref or Themed search
+1. Enter a number in the **Max Results** box on the Song List page
+---
+
+## How to insert blank slides between Service items.
+1. When you select a song, a blank slide will automatically be created before a song unless it follows another song. The **Add blank slide before** checkbox will be ticked.
+2. You can add other blank slides easily by checking the **Add Blank Before** and **Add Blank After** boxes, as required.
+---
+
+## How to edit a song to create a special version for the service
+1. Click the **Edit** button (the pencil icon) on the right of the row where the song is listed.
+2. This will open the **Google Slides Editor**.
+3. Make your edits to the song.
+4. Close the slide editor, and your special copy of the song will be included in your service plan.
+5. Note: For iPad / Mac devices, the Safari Browser works best. You may find, with Chrome and other browsers, that the Google Slides Editor will not open in edit mode.
+---
+
+## How to Delete a Song
+1. Click the waste bin icon in the row where the song is listed, and confirm deletion.
+---
+
+## How to Change the Order of Items in the Service Plan
+1. Hover over the **Item Number** on the left-hand side.
+2. When the cursor changes to a hand icon, click and hold the left mouse button. The cursor will change to a closed hand.
+3. Drag the item up or down to its new position and release the mouse button.
+---
+
+## How to add an item between two existing items
+1. Right-click in the **Item** column on the row where you want the new line to be inserted.
+2. Select **New Line** from the menu.
+3. You can also do this to provide more lines for the plan by right-clicking the **Item** column on the last row of the plan.
+---
+
+## How to view your plan slides
+1. Scroll down the screen to view a gallery of slides created for your plan.
+2. Slides will be displayed in the correct order, including any blank slides you have selected.
+3. The galllery will automatically update as you add/change or reorder service items.
+---
+
+## How to zoom the gallery view
+1. Click the magnifying glass icon with a **+** to enlarge the gallery view.
+2. Click the magnifying glass icon with a **-** to reduce the gallery view and see more slides in a smaller space.
+---
+
+## How to upload your sermon notes and notice notes
+1. Click the **Upload** button in the row next to your **Sermon** or **Notice** item.
+2. Choose the upload type from the menu.This can be a previously prepared PowerPoint presentation file; or a single image that you want to make into a slide; Or you can choose the **Slide Maker** to create your notes directly.
+---
+
+## How to make your sermon notes with the **Slide Maker**
+1. Click the **Upload** button and select **Slide Maker**.
+2. In the **Upload Type** menu, select a template from the **Choose Template** menu.
+3. Select either **No Template** or use a listed pre-prepared template for your sermon notes.
+4. If you encounter a "pop-up blocked" message when you select the **Slide Maker**, click the **Open Slides Editor** button. Your presentation will then open.
+5. When you have created your presentation notes, close the browser tab. You will then be able to return to the planner.
+6. You can click the **Edit** icon at any time to make changes to your notes.
+---
+
+## How to replace a song
+1. Right-click in the **Item** column to show the drop-down menu, and select **Sing**. Then select your new song from the song list.
+2. You new selected song will automatically replace the current song at that position.
+---
+
+## How to replace Notices or Sermon Notes
+1. Click the **Upload** button. You will see a message asking you to confirm that you are replacing the current file.
+2. If you confirm you can then proceed to upload your new file, or to create new slides with the **Slide Maker**
+---
+
+## How to upload slides related to other service items
+1. Click the **Upload** button for the service item you want to pin the slide to
+
+## How to upload images
+1. You can upload an image that will be converted to a slide. Click the **Upload** button and select **Image**
+2. This feature is useful where you want to show a single slide image at some point in the service. 
+
+## How to enter additional notes for the ministry team
+1. Locate the text box labelled **Enter Any Notes for the Service**.
+2. Type your notes in the box.
+3. Use the **Italic** or **Underline** buttons for emphasis, if needed.
+---
+
+## How to add a link to a video or other web item in the additional notes.
+1. Click the **Hyperlink** button.
+2. Add the link text and the address of the video or item.
+3. Click the **Insert Link** button.
+---
+
+## How to send the service plan to additional recipients.
+1. The plan will be emailed to everyone in the distribution list (which is kept in a Google sheet), when you click the **Publish & Share** button.
+2. If you want to send the plan to additional recipients:
+	- Use the **Enter Additional Emails** box.
+	- Type the email addresses of the additional recipients.
+---
+
+## How to Publish a Plan
+1. Once completed, publish the service plan to generate a Google Slides presentation. This will match the thumbnail view shown 	 in the app. Use either the **Publish & Share** (to publish and send emails to ministry team) or the **Publish Only** buttons.
+2. The Publish process may take 1-2 minutes to complete. A pop-up window will show the progress.
+---
+
+## How to make changes after publishing
+1. You can re-publish the plan at any time.
+2. For last-minute changes you can edit the published plan. You will find an edit link in the confirming email.
+3. Note however, that your edits will be lost should you re-publish.
+---
+
+## How to save your Service Plan
+1. The plan is automatically saved each time you make a change
+2. The plan is also saved when you return to the Plan List page, and just before the Plan is published
+3. **Please Note**. When you add songs, notices, sermon notes, or any other slides to your plan, there is a short delay while the planner copies the files into the plan. Once that is done you will see that the item in the **Item** column is <u>underlined</u> Once you see that you know that the slide Gallery has been updated, and it is safe to exit or publish the plan.
+---
+
+## How to delete old plans
+1. In the **Plan List**, select the plan you want to delete.
+2. Click the **Delete Plan** button.
+---
+
+## How to use Touch Gestures
+1. If you are working on a tablet without a keyboard, you can use the following touch gestures:
+a. To show the **Service Items** context menu, double-tap the Item column 
+b. To drag an item to a new position, tap and hold the item number column, and drag up or down.
+---
+
+## How to exit a Service Plan
+1. To exit a service plan and return to the main list, click the **Plan List** button at the top of the screen. 
+---
+
+## How to exit the Planner
+1. To exit the planner just close the browser tab.
+---
+
+
+
