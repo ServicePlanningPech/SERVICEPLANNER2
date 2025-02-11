@@ -7,7 +7,7 @@ function doGet(e) {
       <p>${authResult.message}</p>
       <p>Please contact your administrator for access.</p>
     `)
-    .setTitle('PECH Service Planner - Access Denied');
+    .setTitle('Service Planner - Access Denied');
   }
 
   // Clear any existing cache entries
@@ -42,7 +42,7 @@ function doGet(e) {
    
   return HtmlService.createTemplateFromFile('main')
     .evaluate()
-    .setTitle('PECH Service Planner')
+    .setTitle('Service Planner2')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
