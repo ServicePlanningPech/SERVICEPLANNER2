@@ -82,11 +82,14 @@ A Google Apps Script web application for planning and managing church services. 
    - BlankTemplateId: File ID of blank template
    - PublishId: Folder ID for published presentations
    - EmailDistId: Spreadsheet ID for email distribution list
-   - NoticesId: Folder ID for notices
+   - NoticesId: Folder ID for notices. Notices get saved in this folder, which should be a sub-folder of the PublishId
    - Debug: Debug logging setting (on/off)
    - SharePlans: Auto-share setting (yes/no). Set to yes to allow email recipients to click song hyperlinks
    - AdminEmail: Administrator email address
-   - HoToId: Id of a google help file
+   - HoToId: Id of a google help text file with How-To content from "ServicePlannerHowTo.txt" in this repo
+   - Licence: A Licence string showing your CCL or other licence, if you are showing copyright lyrics
+   - apiKey: Your OpenAI Api key for advanced song search, if required. The search uses gpt-4o-mini. Note, it only returns results of songs that are in your song database.
+   - ContextMenu: The service items you want to appear in the right-click dropdown menu. For example Welcome,Notices,Sing,Hymn,Reading,Prayer,Sermon,Message,Lord's Supper,Communion
 
 2. Set up required folders in Google Drive:
    - SERVICE PLANS (created automatically)
