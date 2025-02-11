@@ -1,0 +1,401 @@
+<script>
+// Global variables
+let helpData = null;
+
+async function showHowTo() {
+  // Check if help data is available in settings
+  //const settings = await callGetSettings(); Don't need this, settings is global
+  if (!settings.HowToId) {
+    showToast("How To helps not available.", 8);
+    return;
+  }
+
+  // If modal doesn't exist, create it
+  createHowToModal();
+
+  try {
+    // Only fetch help data if we haven't already
+    if (!helpData) {
+     await getHowToContent(settings.HowToId) 
+     .then(result => {
+       response = result;
+       })
+     .catch(error => {
+        alert('Error:' + error);
+      }); 
+
+      
+      if (!response) {
+        showToast("Could not load help content.", 3);
+        return;
+      }
+
+      // Parse markdown and create accordion items
+      const parsedContent = marked.parse(response);
+      const sections = parseSectionsFromHTML(parsedContent);
+      populateAccordion(sections);
+      helpData = sections; // Cache the parsed data
+    }
+
+    // Show the modal
+    const modal = new bootstrap.Modal(document.getElementById('howToModal'));
+    modal.show();
+
+  } catch (error) {
+    console.error('Error showing help:', error);
+    showToast("Error loading help content.", 3);
+  }
+}
+
+function createHowToModal() {
+  if (document.getElementById('howToModal')) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.id = 'howToModal';
+  modal.setAttribute('tabindex', '-1');
+  modal.setAttribute('aria-labelledby', 'howToModalLabel');
+  modal.setAttribute('aria-hidden', 'true');
+
+  // Add styles for search highlights and animations
+  const style = document.createElement('style');
+  style.textContent = `
+    .search-highlight {
+      background-color: #ffeb3b;
+      padding: 2px;
+      border-radius: 2px;
+      transition: background-color 0.2s;
+    }
+    .search-highlight:hover {
+      background-color: #fdd835;
+    }
+    #howToSearch {
+      border: 2px solid #fd7e14;
+      border-radius: 8px;
+      padding: 8px 12px;
+      transition: all 0.3s ease;
+    }
+    #howToSearch:focus {
+      border-color: #fd7e14;
+      box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.25);
+    }
+    .accordion-button:not(.collapsed) {
+      background-color: #fff3e0;
+      color: #fd7e14;
+    }
+    .accordion-button:focus {
+      border-color: #fd7e14;
+      box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, 0.25);
+    }
+    #noResults {
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 8px;
+      background-color: #e6f3ff;
+      border: 2px solid #fd7e14;
+      color: #000;
+      font-weight: bold;
+      text-align: center;
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .search-container {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fd7e14;
+      pointer-events: none;
+    }
+    .clear-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      display: none;
+    }
+    .clear-search:hover {
+      background-color: rgba(0,0,0,0.1);
+    }
+  `;
+  document.head.appendChild(style);
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="howToModalLabel">How To Guide</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Search box with icon -->
+          <div class="search-container">
+            <input type="text" 
+                   class="form-control" 
+                   id="howToSearch" 
+                   placeholder="Search help topics..."
+                   aria-label="Search help topics">
+            <span class="search-icon">🔍</span>
+            <button class="clear-search" 
+                    id="clearSearch" 
+                    aria-label="Clear search"
+                    title="Clear search">✖</button>
+          </div>
+          
+          <!-- Help content -->
+          <div class="accordion" id="howToAccordion">
+            <!-- Accordion items will be inserted here -->
+          </div>
+          
+          <!-- No results message -->
+          <div id="noResults" class="alert alert-info" style="display: none;">
+            No matching help topics found. Try different keywords or browse all topics below.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Initialize search functionality
+  initializeHowToSearch();
+
+  // Add clear search button functionality
+  const searchInput = document.getElementById('howToSearch');
+  const clearButton = document.getElementById('clearSearch');
+
+  searchInput.addEventListener('input', function() {
+    clearButton.style.display = this.value ? 'block' : 'none';
+  });
+
+  clearButton.addEventListener('click', function() {
+    searchInput.value = '';
+    searchInput.focus();
+    searchHowTo('');
+    this.style.display = 'none';
+  });
+
+  // Add keyboard shortcut (Ctrl/Cmd + F) to focus search
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f' && modal.classList.contains('show')) {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Focus search input when modal opens
+  modal.addEventListener('shown.bs.modal', function() {
+    searchInput.focus();
+  });
+
+  // Reset search when modal closes
+  modal.addEventListener('hidden.bs.modal', function() {
+    searchInput.value = '';
+    clearButton.style.display = 'none';
+    searchHowTo('');
+  });
+}
+
+function parseSectionsFromHTML(html) {
+  const sections = [];
+  const container = document.createElement('div');
+  container.innerHTML = html;
+
+  let currentSection = null;
+  let currentContent = [];
+
+  // Process each element
+  container.childNodes.forEach(node => {
+    if (node.nodeName === 'H2' || node.nodeName === 'H1') {
+      // If we have a previous section, save it
+      if (currentSection) {
+        sections.push({
+          title: currentSection,
+          content: currentContent.join('')
+        });
+      }
+      // Start new section
+      currentSection = node.textContent;
+      currentContent = [];
+    } else {
+      // Add to current section's content
+      currentContent.push(node.outerHTML || node.textContent);
+    }
+  });
+
+  // Add the last section
+  if (currentSection) {
+    sections.push({
+      title: currentSection,
+      content: currentContent.join('')
+    });
+  }
+
+  return sections;
+}
+
+function populateAccordion(sections) {
+  const accordion = document.getElementById('howToAccordion');
+  accordion.innerHTML = sections.map((section, index) => `
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="heading${index}">
+        <button class="accordion-button ${index === 0 ? '' : 'collapsed'}" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#collapse${index}" 
+                aria-expanded="${index === 0 ? 'true' : 'false'}" 
+                aria-controls="collapse${index}">
+          ${section.title}
+        </button>
+      </h2>
+      <div id="collapse${index}" 
+           class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+           aria-labelledby="heading${index}" 
+           data-bs-parent="#howToAccordion">
+        <div class="accordion-body">
+          ${section.content}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function initializeHowToSearch() {
+  const searchInput = document.getElementById('howToSearch');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', debounce(function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    searchHowTo(searchTerm);
+  }, 300));
+  
+  // Add keyboard navigation
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      searchHowTo('');
+    }
+  });
+}
+
+function searchHowTo(searchTerm) {
+  const accordion = document.getElementById('howToAccordion');
+  const noResults = document.getElementById('noResults');
+  const items = accordion.getElementsByClassName('accordion-item');
+  let hasVisibleItems = false;
+
+  for (const item of items) {
+    const title = item.querySelector('.accordion-header').textContent.toLowerCase();
+    const content = item.querySelector('.accordion-body').textContent.toLowerCase();
+    const isMatch = title.includes(searchTerm) || content.includes(searchTerm);
+    
+    item.style.display = isMatch ? 'block' : 'none';
+    
+    if (isMatch) {
+      hasVisibleItems = true;
+      // If searching, expand matching items
+      if (searchTerm) {
+        const collapse = bootstrap.Collapse.getInstance(item.querySelector('.accordion-collapse'));
+        if (collapse) collapse.show();
+      }
+      
+      // Highlight matching text if there's a search term
+      if (searchTerm) {
+        highlightMatches(item, searchTerm);
+      } else {
+        // Remove highlights if search is cleared
+        removeHighlights(item);
+      }
+    }
+  }
+
+  // Show/hide no results message
+  noResults.style.display = hasVisibleItems ? 'none' : 'block';
+}
+
+function highlightMatches(element, searchTerm) {
+  const header = element.querySelector('.accordion-header button');
+  const body = element.querySelector('.accordion-body');
+  
+  // Remove existing highlights first
+  removeHighlights(element);
+  
+  // Function to highlight text
+  const highlight = (node) => {
+    if (node.nodeType === 3) { // Text node
+      const text = node.textContent;
+      const lowerText = text.toLowerCase();
+      let index = lowerText.indexOf(searchTerm);
+      
+      if (index >= 0) {
+        const span = document.createElement('span');
+        span.className = 'search-highlight';
+        span.style.backgroundColor = '#ffeb3b';
+        span.style.padding = '2px';
+        span.style.borderRadius = '2px';
+        
+        const before = text.substring(0, index);
+        const match = text.substring(index, index + searchTerm.length);
+        const after = text.substring(index + searchTerm.length);
+        
+        const beforeNode = document.createTextNode(before);
+        const matchNode = document.createElement('span');
+        matchNode.className = 'search-highlight';
+        matchNode.style.backgroundColor = '#ffeb3b';
+        matchNode.textContent = match;
+        const afterNode = document.createTextNode(after);
+        
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(beforeNode);
+        fragment.appendChild(matchNode);
+        fragment.appendChild(afterNode);
+        
+        node.parentNode.replaceChild(fragment, node);
+      }
+    } else if (node.nodeType === 1) { // Element node
+      Array.from(node.childNodes).forEach(highlight);
+    }
+  };
+  
+  // Highlight matches in header and body
+  highlight(header);
+  highlight(body);
+}
+
+function removeHighlights(element) {
+  const highlights = element.querySelectorAll('.search-highlight');
+  highlights.forEach(highlight => {
+    const parent = highlight.parentNode;
+    const text = document.createTextNode(highlight.textContent);
+    parent.replaceChild(text, highlight);
+  });
+}
+
+// Utility function to debounce search input
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+</script>
