@@ -1,4 +1,4 @@
-# Church Service Planner
+# Service Planner2
 
 A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members.
 
@@ -13,6 +13,7 @@ A Google Apps Script web application for planning and managing church services. 
 
 ### Content Management
 - Song/hymn database integration
+- AI Searching for songs by Bible Reference or theme
 - PowerPoint and image file upload capabilities
 - Google Slides integration
 - Slide template system
@@ -24,14 +25,14 @@ A Google Apps Script web application for planning and managing church services. 
 - Automatic compilation of all service elements into a single presentation
 - Email distribution to team members
 - Configurable sharing permissions
-- Service plan status tracking
+  
 
 ### User Interface
-- Responsive design for desktop and mobile devices
+- Responsive design for desktop and tablets
 - Intuitive drag-and-drop interface
-- Real-time preview of slides
-- Context menus for quick actions
-- Comprehensive help system
+- Real-time preview of slides in a slide gallery
+- Context menus for quick isertion of service items
+- "How-to" help system
 - Progress indicators for long operations
 
 ## Prerequisites
@@ -39,7 +40,7 @@ A Google Apps Script web application for planning and managing church services. 
 1. Google Workspace (formerly G Suite) account or standard Google account
 2. Permissions to create and execute Google Apps Script projects
 3. Google Drive storage space for service plans and presentations
-4. Access to Google Slides API
+4. Access to Google Slides and Googl Drive API's
 
 ## Installation
 
@@ -65,12 +66,17 @@ A Google Apps Script web application for planning and managing church services. 
    - Set access to "Anyone with Google Account"
    - Click "Deploy"
 
-## Configuration
-
 ### Initial Setup
 
-1. Create a settings spreadsheet named "ServicePlanner2Settings" with these key settings:
-   - Title: Application title
+1. Set up required folders in Google Drive:
+   - SERVICE PLANS (created automatically)
+   - Song Database folder. Add your song lyrics as google slide files
+   - Templates folder
+   - Published Plans folder
+   - Notices folder
+
+2. Create a settings spreadsheet named "ServicePlanner2Settings" with these key settings:
+   - Title: Title you want to show
    - SongDatabaseId: Folder ID containing song presentations
    - SlideTemplateId: Folder ID containing slide templates
    - BlankTemplateId: File ID of blank template
@@ -78,8 +84,9 @@ A Google Apps Script web application for planning and managing church services. 
    - EmailDistId: Spreadsheet ID for email distribution list
    - NoticesId: Folder ID for notices
    - Debug: Debug logging setting (on/off)
-   - SharePlans: Auto-share setting (yes/no)
+   - SharePlans: Auto-share setting (yes/no). Set to yes to allow email recipients to click song hyperlinks
    - AdminEmail: Administrator email address
+   - HoToId: Id of a google help file
 
 2. Set up required folders in Google Drive:
    - SERVICE PLANS (created automatically)
