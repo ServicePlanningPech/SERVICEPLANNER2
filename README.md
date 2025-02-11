@@ -1,6 +1,6 @@
 # Service Planner2
 
-A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members. The Planner helps to construct a service presentation in the form of a google slide presentation, combining song lyrics, sermon notes, scriptures and any other required slides. The 'published' presentation can be projected in a number of ways. A very basic solution would be to use a "Chromecast" device connected to a prpjector and linked with a smartphone, to display the slides directly from Google Drive. At our church we synchronise the published plans with a PC running  'vMix' video production and streaming software.  
+A Google Apps Script web application for planning and managing church services. This application helps worship leaders and church staff efficiently organize service elements, manage presentations, and share service plans with team members. The Planner helps to construct a service presentation in the form of a google slide presentation, combining song lyrics, sermon notes, scriptures and any other required slides. The 'published' presentation can be projected in a number of ways. A very basic solution would be to use a "Chromecast" device connected to a projector and linked with a smartphone, to display the slides directly from Google Drive. At our church we synchronise the published plans with a PC running  'vMix' video production and streaming software.  
 
 ## Features
 
