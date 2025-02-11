@@ -9,6 +9,36 @@ function doGet(e) {
     `)
     .setTitle('PECH Service Planner - Access Denied');
   }
+
+  // Clear any existing cache entries
+  try {
+    const cache = CacheService.getUserCache();
+    cache.removeAll(['planner2Settings', 'planner2Debug']);
+  } catch (error) {
+    Logger.log("Error clearing cache: " + error.message);
+  }
+
+  // Get fresh settings and set in cache
+  try {
+    const settings = getSettings();
+    const cache = CacheService.getUserCache();
+    
+    // Cache the full settings object
+    cache.put('planner2Settings', JSON.stringify(settings), 21600); // 6 hours
+    
+    // Cache the debug setting separately
+    const debugValue = settings.Debug || 'no';
+    cache.put('planner2Debug', debugValue, 21600);
+  } catch (error) {
+    Logger.log("Error setting up cache: " + error.message);
+    // Ensure debug is off if there's an error
+    try {
+      const cache = CacheService.getUserCache();
+      cache.put('planner2Debug', 'no', 21600);
+    } catch (cacheError) {
+      Logger.log("Error setting debug cache: " + cacheError.message);
+    }
+  }
    
   return HtmlService.createTemplateFromFile('main')
     .evaluate()
@@ -520,10 +550,17 @@ function getSongList() {
 }
 
 function debugLog(message) {
-    
   try {
-  //  var lock = LockService.getScriptLock(); 
-  //  lock.waitLock(30000); // Wait up to 30 seconds for a lock.
+    // Check cache for debug setting
+    const cache = CacheService.getUserCache();
+    const debugSetting = cache.get('planner2Debug');
+    
+    // Return if no cache entry or debug is not 'yes'
+    if (!debugSetting || debugSetting !== 'on') {
+      return;
+    }
+    
+    // If we get here, debug is enabled - proceed with logging
     let debugSheet;
     const debugFileName = "Service Planner2 Debug Log";
     let spreadsheet;
@@ -548,7 +585,6 @@ function debugLog(message) {
     Logger.log("Debug logging failed: " + e.toString());
     Logger.log("Original message: " + message);
   }
-   //lock.releaseLock
 }
 
 
@@ -750,12 +786,27 @@ function findSettingsSpreadsheet() {
 
 function getSettings() {
   try {
+    const cache = CacheService.getUserCache();
+    let settings;
+
+    // Try to get settings from cache first
+    const cachedSettings = cache.get('planner2Settings');
+    if (cachedSettings) {
+      try {
+        return JSON.parse(cachedSettings);
+      } catch (parseError) {
+        // If JSON parse fails, continue to fetch from spreadsheet
+        Logger.log("Error parsing cached settings: " + parseError.message);
+      }
+    }
+
+    // If not in cache or parse failed, get from spreadsheet
     const sheetId = findSettingsSpreadsheet();
     const ss = SpreadsheetApp.openById(sheetId);
     const sheet = ss.getSheets()[0];
     
     const data = sheet.getDataRange().getValues();
-    const settings = {};
+    settings = {};
     
     // Start from row 1 (skipping header)
     for (let i = 1; i < data.length; i++) {
@@ -763,12 +814,69 @@ function getSettings() {
         settings[data[i][0]] = data[i][1];
       }
     }
+
+    // Store in cache for 6 hours (21600 seconds)
+    try {
+      cache.put('planner2Settings', JSON.stringify(settings), 21600);
+      // Also set debug flag in cache for consistency
+      cache.put('planner2Debug', settings.Debug || 'no', 21600);
+    } catch (cacheError) {
+      Logger.log("Error caching settings: " + cacheError.message);
+    }
     
     return settings;
     
   } catch (error) {
-    debugLog("Error getting settings: " + error.message);
+    Logger.log("Error getting settings: " + error.message);
     throw new Error("Failed to load settings: " + error.message);
+  }
+}
+
+// Add a function to clear settings cache when needed
+function clearSettingsCache() {
+  try {
+    const cache = CacheService.getUserCache();
+    cache.remove('planner2Settings');
+    cache.remove('planner2Debug');
+    return true;
+  } catch (error) {
+    Logger.log("Error clearing settings cache: " + error.message);
+    return false;
+  }
+}
+
+// Add a function to update a single setting
+function updateSetting(key, value) {
+  try {
+    // Update in spreadsheet first
+    const sheetId = findSettingsSpreadsheet();
+    const ss = SpreadsheetApp.openById(sheetId);
+    const sheet = ss.getSheets()[0];
+    const data = sheet.getDataRange().getValues();
+    
+    let rowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === key) {
+        rowIndex = i + 1; // +1 because spreadsheet rows are 1-based
+        break;
+      }
+    }
+    
+    if (rowIndex === -1) {
+      // Key doesn't exist, append new row
+      sheet.appendRow([key, value]);
+    } else {
+      // Update existing row
+      sheet.getRange(rowIndex, 2).setValue(value);
+    }
+    
+    // Clear cache to force refresh
+    clearSettingsCache();
+    
+    return true;
+  } catch (error) {
+    Logger.log("Error updating setting: " + error.message);
+    throw new Error("Failed to update setting: " + error.message);
   }
 }
 
