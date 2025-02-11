@@ -91,18 +91,11 @@ A Google Apps Script web application for planning and managing church services. 
    - apiKey: Your OpenAI Api key for advanced song search, if required. The search uses gpt-4o-mini. Note, it only returns results of songs that are in your song database.
    - ContextMenu: The service items you want to appear in the right-click dropdown menu. For example Welcome,Notices,Sing,Hymn,Reading,Prayer,Sermon,Message,Lord's Supper,Communion
 
-2. Set up required folders in Google Drive:
-   - SERVICE PLANS (created automatically)
-   - Song Database folder
-   - Templates folder
-   - Published Plans folder
-   - Notices folder
-
 3. Create email distribution list spreadsheet with columns:
    - Name
    - Email
-   - Distribution Checkbox
-   - Authorization Checkbox
+   - Distribution Checkbox. These are your ministry team members who need to know your service plan
+   - Authorization Checkbox. These are people who are allowed to create service plans.
 
 ### Security Configuration
 
