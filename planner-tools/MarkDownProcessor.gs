@@ -1,4 +1,4 @@
-function showMarkdownDialog() {
+function showMarkdownEditorDialog() {
   const ui = SlidesApp.getUi();
   const presentation = SlidesApp.getActivePresentation();
   const lastSlideIndex = presentation.getSlides().length + 1;
@@ -59,6 +59,10 @@ function showMarkdownDialog() {
           button:hover {
             background-color: #45a049;
           }
+          button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+          }
           button.secondary {
             background-color: #617d98;
           }
@@ -71,6 +75,7 @@ function showMarkdownDialog() {
           }
           .error { color: red; }
           .success { color: green; }
+          .progress { color: #666; }
           .help-modal {
             display: none;
             position: fixed;
@@ -187,23 +192,31 @@ function showMarkdownDialog() {
             const markdownText = document.getElementById('markdownInput').value;
             const slideNumber = document.getElementById('slideNumber').value;
             const statusDiv = document.getElementById('status');
+            const submitButton = document.querySelector('button.primary');
             
             if (!markdownText.trim()) {
               statusDiv.innerHTML = '<span class="error">Please enter some markdown text</span>';
               return;
             }
             
-            statusDiv.innerHTML = '<span>Creating slide...</span>';
+            statusDiv.innerHTML = '<span class="progress">Creating slide...</span>';
+            submitButton.disabled = true;
             
             google.script.run
               .withSuccessHandler(function(result) {
-                statusDiv.innerHTML = '<span class="success">Slide created successfully!</span>';
-                setTimeout(function() {
-                  google.script.host.close();
-                }, 1000);
+                if (result.success) {
+                  statusDiv.innerHTML = '<span class="success">Slide created successfully!</span>';
+                  setTimeout(function() {
+                    google.script.host.close();
+                  }, 1000);
+                } else {
+                  statusDiv.innerHTML = '<span class="error">Error: ' + (result.error || 'Unknown error') + '</span>';
+                  submitButton.disabled = false;
+                }
               })
               .withFailureHandler(function(error) {
-                statusDiv.innerHTML = '<span class="error">Error: ' + error.message + '</span>';
+                statusDiv.innerHTML = '<span class="error">Error: ' + (error.message || error) + '</span>';
+                submitButton.disabled = false;
               })
               .processMarkdown({
                 markdown: markdownText,
@@ -244,13 +257,74 @@ function processMarkdown(data) {
     const pageHeight = presentation.getPageHeight();
     
     const lines = data.markdown.split('\n');
-    let currentY = 20; // Reduced from 40
+    let currentY = 20;
     let listLevel = 0;
     let listCounter = 1;
     let romanCounter = 1;
     
     const TAB_WIDTH = 40;
     const BLANK_LINE_HEIGHT = 32;
+
+    function processStyles(text, textRange) {
+      // Create a map to store style information
+      const styleMap = new Map();
+      let processedText = text;
+      
+      // Process bold text (**text**)
+      processedText = processedText.replace(/\*\*(.+?)\*\*/g, (match, content, offset) => {
+        styleMap.set(offset, { length: content.length, type: 'bold', content });
+        return content;
+      });
+      
+      // Process italic text (*text*)
+      processedText = processedText.replace(/\*([^*]+?)\*/g, (match, content, offset) => {
+        styleMap.set(offset, { length: content.length, type: 'italic', content });
+        return content;
+      });
+      
+      // Process underlined text (__text__)
+      processedText = processedText.replace(/__(.+?)__/g, (match, content, offset) => {
+        styleMap.set(offset, { length: content.length, type: 'underline', content });
+        return content;
+      });
+      
+      // Apply styles
+      for (const [offset, style] of styleMap.entries()) {
+        const range = textRange.getRange(offset, offset + style.length);
+        switch (style.type) {
+          case 'bold':
+            range.getTextStyle().setBold(true);
+            break;
+          case 'italic':
+            range.getTextStyle().setItalic(true);
+            break;
+          case 'underline':
+            range.getTextStyle().setUnderline(true);
+            break;
+        }
+      }
+      
+      return processedText;
+    }
+
+    // Helper function to determine if a line is a bullet point
+    function parseBulletPoint(line) {
+      const trimmedLine = line.trim();
+      // Check for bullet point markers at the start of the line
+      const bulletMatch = trimmedLine.match(/^([*-]|(\d+\.)|([IVXivx]+\.))\s+(.+)$/);
+      
+      if (bulletMatch) {
+        const [, marker, , , content] = bulletMatch;
+        return {
+          isBullet: true,
+          marker,
+          content: content.trim(),
+          indent: line.search(/\S/)
+        };
+      }
+      
+      return { isBullet: false };
+    }
     
     lines.forEach((line, index) => {
       const trimmedLine = line.trim();
@@ -260,12 +334,19 @@ function processMarkdown(data) {
       }
       
       if (trimmedLine.startsWith('#')) {
+        // Handle headings
         const level = trimmedLine.match(/^#+/)[0].length;
         const text = trimmedLine.replace(/^#+\s*/, '');
         const fontSize = [40, 32, 24][Math.min(level - 1, 2)];
         
         const textBox = slide.insertTextBox(text, 40, currentY, pageWidth - 80, fontSize * 1.5);
         const textRange = textBox.getText();
+        
+        const processedText = processStyles(text, textRange);
+        if (processedText !== text) {
+          textBox.getText().setText(processedText);
+        }
+        
         textRange.getTextStyle()
           .setFontSize(fontSize)
           .setFontFamily('Arial')
@@ -278,30 +359,30 @@ function processMarkdown(data) {
         currentY += fontSize * 1.5;
         listLevel = 0;
         
-      } else if (trimmedLine.match(/^[*-]/) || trimmedLine.match(/^\d+\./) || trimmedLine.match(/^[IVXivx]+\./)) {
-        const indent = line.search(/\S/);
-        const newLevel = Math.floor(indent / 2);
-        const listMatch = trimmedLine.match(/^([*-]|\d+\.|[IVXivx]+\.)\s*(.+)$/);
+      } else {
+        // Check if this is a bullet point
+        const bulletInfo = parseBulletPoint(line);
         
-        if (listMatch) {
-          const [, marker, content] = listMatch;
+        if (bulletInfo.isBullet) {
+          // Handle bullet points
+          const newLevel = Math.floor(bulletInfo.indent / 2);
           let bulletText;
           
-          if (marker === '*' || marker === '-') {
+          if (bulletInfo.marker === '*' || bulletInfo.marker === '-') {
             bulletText = '•';
-          } else if (marker.match(/^\d+\./)) {
+          } else if (bulletInfo.marker.match(/^\d+\./)) {
             bulletText = `${listCounter}.`;
             listCounter++;
           } else {
-            bulletText = marker;
+            bulletText = bulletInfo.marker;
             romanCounter++;
           }
           
           const baseIndent = 40 + (newLevel * TAB_WIDTH);
-          const textHeight = Math.ceil(content.length / ((pageWidth - baseIndent - 80) / 20)) * 35;
+          const textHeight = Math.ceil(bulletInfo.content.length / ((pageWidth - baseIndent - 80) / 20)) * 35;
           
           const textBox = slide.insertTextBox(
-            `${bulletText}\t${content}`,
+            `${bulletText}\t${bulletInfo.content}`,
             baseIndent,
             currentY,
             pageWidth - baseIndent - 40,
@@ -309,39 +390,48 @@ function processMarkdown(data) {
           );
           
           const textRange = textBox.getText();
+          const processedText = processStyles(bulletInfo.content, textRange);
+          if (processedText !== bulletInfo.content) {
+            textBox.getText().setText(`${bulletText}\t${processedText}`);
+          }
+          
           textRange.getTextStyle()
             .setFontSize(32)
-            .setFontFamily('Arial')
-            .setBold(true);
+            .setFontFamily('Arial');
           
           textRange.getParagraphStyle()
             .setIndentStart(TAB_WIDTH)
             .setLineSpacing(100);
           
           currentY += Math.max(50, textHeight);
+          
+        } else {
+          // Handle regular text
+          const textHeight = Math.ceil(trimmedLine.length / ((pageWidth - 120) / 20)) * 35;
+          
+          const textBox = slide.insertTextBox(
+            trimmedLine,
+            40,
+            currentY,
+            pageWidth - 80,
+            Math.max(50, textHeight)
+          );
+          
+          const textRange = textBox.getText();
+          const processedText = processStyles(trimmedLine, textRange);
+          if (processedText !== trimmedLine) {
+            textBox.getText().setText(processedText);
+          }
+          
+          textRange.getTextStyle()
+            .setFontSize(32)
+            .setFontFamily('Arial');
+          
+          textRange.getParagraphStyle()
+            .setLineSpacing(100);
+          
+          currentY += Math.max(50, textHeight);
         }
-        
-      } else {
-        const textHeight = Math.ceil(trimmedLine.length / ((pageWidth - 120) / 20)) * 35;
-        
-        const textBox = slide.insertTextBox(
-          trimmedLine,
-          40,
-          currentY,
-          pageWidth - 80,
-          Math.max(50, textHeight)
-        );
-        
-        const textRange = textBox.getText();
-        textRange.getTextStyle()
-          .setFontSize(32)
-          .setFontFamily('Arial')
-          .setBold(true);
-        
-        textRange.getParagraphStyle()
-          .setLineSpacing(100);
-        
-        currentY += Math.max(50, textHeight);
       }
     });
     
@@ -349,6 +439,9 @@ function processMarkdown(data) {
     
   } catch (error) {
     Logger.log("Markdown processing error: " + error.message);
-    throw new Error("Failed to process markdown: " + error.message);
+    return { 
+      success: false, 
+      error: error.message 
+    };
   }
 }
