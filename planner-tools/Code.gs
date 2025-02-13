@@ -4,7 +4,7 @@ function onOpen() {
     .addItem('Add Scripture Slides', 'showScriptureDialog')
     .addItem('Insert Slides from File', 'showFilePickerDialog')
     .addItem('Upload Image', 'showImageUploadDialog')  // New menu item
-    .addItem('Markdown Editor', 'showMarkdownDialog')
+    .addItem('Markdown Editor', 'showMarkdownEditorDialog')
     .addToUi();
 }
 
