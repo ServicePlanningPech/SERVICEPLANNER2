@@ -249,7 +249,8 @@
          cursor: move;
          user-select: none;
          }
-         /* Slides Gallery styles */
+
+        /* Slides Gallery styles */
          .slides-gallery {
          display: grid;
          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -367,23 +368,24 @@
          #toast { 
             visibility: hidden; 
             min-width: 250px; 
-            background-color: #e6f3ff; /* Light blue background */
-            color: #000; /* Dark text for contrast */
+            background-color: #e6f3ff;
+            color: #000;
             font-weight: bold;
             text-align: center; 
-            border-radius: 15px; /* Rounded corners */
-            border: 2px solid #fd7e14; /* Orange border */
+            border-radius: 15px;
+            border: 2px solid #fd7e14;
             padding: 16px; 
             position: fixed; 
             z-index: 1; 
-            left: 30px; /* Position from left instead of center */
+            left: 30px;
             bottom: 30px; 
             font-size: 17px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Subtle shadow */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
           }
           #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; } 
           @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} } 
-          @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;}
+          @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
          /* Mobile and tablet styles */
          .mobile-device .service-items-container {
          flex: 1 1 100%;
@@ -405,6 +407,7 @@
          .mobile-device .table td.item-detail {
          min-width: 300px;
          }
+
          /* Only hide action buttons on phone-sized screens */
          @media (max-width: 768px) {
          .mobile-device .table th:nth-child(n+8),
@@ -412,65 +415,15 @@
          display: none;
          }
          }
+
          /* Show action buttons on iPad and larger tablets */
          @media (min-width: 769px) {
          .mobile-device .service-items-container {
          min-width: 800px;
          }
          }
-         /* Ensure buttons are touchable */
-         .mobile-device .table .btn-sm {
-         min-height: 30px;
-         min-width: 30px;
-         padding: 4px 8px;
-         }
-         /* Adjust input fields for touch */
-         .mobile-device input[type="checkbox"] {
-         min-width: 20px;
-         min-height: 20px;
-         }
-         /* Show scroll indicators */
-         .mobile-device .table-responsive {
-         position: relative;
-         overflow-x: auto;
-         -webkit-overflow-scrolling: touch;
-         background:
-         linear-gradient(to right, white 30%, rgba(255, 255, 255, 0)),
-         linear-gradient(to right, rgba(255, 255, 255, 0), white 70%) 100% 0,
-         linear-gradient(to right, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 20%),
-         linear-gradient(to left, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 20%) 100% 0;
-         background-repeat: no-repeat;
-         background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
-         background-attachment: local, local, scroll, scroll;
-         }
-         /* Ensure the table container takes full width */
-         .mobile-device .layout-container {
-         margin: 0;
-         padding: 0;
-         width: 100vw;
-         }
-         /* Add this CSS to the existing styles in main.html */
-        .grab-icon {
-         font-size: 16px;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         cursor: grab !important;
-         }
-         .grab-icon:hover {
-         cursor: grabbing !important;
-         }
-         .item-number {
-         cursor: grab !important;
-         }
-         .item-number:hover {
-         cursor: grabbing !important;
-         }
-         /* When actually dragging, show grabbing cursor */
-         tr.dragging .item-number {
-         cursor: grabbing !important;
-         }
 
+         /* Search and interface elements */
          .search-type-group {
             display: flex;
             gap: 10px;
@@ -486,6 +439,7 @@
           .search-type-group input[type="radio"] {
             margin-right: 0.5rem;
           }
+
           #serviceNotes[contenteditable=true] {
             overflow-y: auto;
             white-space: pre-wrap;
@@ -510,48 +464,27 @@
             color: white;
             border-color: #fd7e14;
           }
-        .service-info-container #serviceNotes .link-text {
-          color: #0d6efd;
-          text-decoration: underline;
-          cursor: pointer;
-        }
 
-        .search-type-group input[type="radio"] {
-            margin-right: 0.5rem;
-          }
-          
-          /* Search button styles */
-          #searchBtn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: white;
-            border: 1px solid #fd7e14;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            font-size: 20px;
-            transition: all 0.2s ease;
-            margin-right: 10px;
-          }
-          
-          #searchBtn:hover {
-            background-color: #fd7e14;
-            color: white;
-            transform: scale(1.1);
+          /* New styles for Add New Song functionality */
+
+          #newSongModal .modal-content {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
           }
 
-          .search-type-group input[type="radio"] {
-            margin-right: 0.5rem;
+          #newSongModal .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #fd7e14;
           }
-          
-          .btn-unstyled {
-            background: none;
-            border: none !important;
-            padding: 0;
-            outline: none !important;
-            box-shadow: none !important;
+
+          #newSongModal .alert {
+            margin-bottom: 0;
+            margin-top: 1rem;
+          }
+
+          #newSongStatus {
+            transition: all 0.3s ease;
           }
 
           .preview-btn {
@@ -566,7 +499,6 @@
             transform: scale(1.2);
             color: #fd7e14;
           }
-                              
       </style>
    </head>
    <body>
@@ -582,7 +514,8 @@
             </div>
          </div>
       </div>
-      <!-- Update the Plans List Section in main.html -->
+
+      <!-- Plans List Section -->
       <section id="plansList" class="app-section active">
          <div class="mt-4">
             <div class="d-flex justify-content-between align-items-center mb-3"
@@ -632,6 +565,7 @@
             </div>
          </div>
       </section>
+
       <!-- Plan Edit Section -->
       <section id="planEdit" class="app-section">
          <div class="mt-4">
@@ -717,12 +651,13 @@
             </div>
          </div>
       </section>
+
       <!-- Context Menu for Item Types -->
       <div class="dropdown-menu" id="itemTypeMenu">
          <button class="dropdown-item" data-type="NewLine">New Line</button>
       </div>
+
       <div id="toast"></div>
-      <!-- Modals -->
       <!-- New Plan Modal -->
       <div class="modal fade" id="newPlanModal" tabindex="-1">
          <div class="modal-dialog">
@@ -758,7 +693,8 @@
             </div>
          </div>
       </div>
-<!-- Message and Confirmation Modal -->
+
+      <!-- Message and Confirmation Modal -->
       <div class="modal fade" id="confirmModal" tabindex="-1">
          <div class="modal-dialog">
             <div class="modal-content">
@@ -776,171 +712,203 @@
             </div>
          </div>
       </div>
-<!-- Song Selection Modal -->
-<div class="modal fade" id="songSelectModal" tabindex="-1">
-   <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title">Select Song</h5>
-            <div class="ms-auto">
-               <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-               <button type="button" class="btn btn-primary" id="chooseSongBtn" disabled>Select Song</button>
-            </div>
-            <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"></button>
-         </div>
-         <div class="modal-body">
-          <div class="search-type-group d-flex align-items-center gap-3">
-            <label>
-              <input type="radio" name="searchType" id="nameSearch" value="name" checked>
-              Name Search
-            </label>
-            <label>
-              <input type="radio" name="searchType" id="bibleSearch" value="bible">
-              Bible Reference
-            </label>
-            <label>
-              <input type="radio" name="searchType" id="themeSearch" value="theme">
-              Theme Search
-            </label>
-            <div id="maxResultsContainer" class="d-flex align-items-center gap-2" style="display: none !important;">
-              <label for="maxResults">Max Results:</label>
-              <input type="number" class="form-control form-control-sm" id="maxResults" value="6" min="1" max="20" style="width: 70px">
-            </div>
-          </div>
-            <div class="search-controls mb-3">
-               <div class="input-group">
-                  <button type="button" id="searchBtn" style="display:none">🔍</button>
-                  <input type="text" class="form-control" id="songSearch" 
-                      placeholder="Search by name or bible reference, or theme...">
+
+      <!-- Song Selection Modal -->
+      <div class="modal fade" id="songSelectModal" tabindex="-1">
+         <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Select Song</h5>
+                  <div class="ms-auto">
+                     <button type="button" class="btn btn-primary" id="chooseSongBtn" disabled>Select Song</button>
+                     <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn btn-primary" id="addNewSongBtn">Add New Song</button>
+                  </div>
+                  <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"></button>
                </div>
-            </div>
-            <div id="songListContainer" style="max-height: 400px; overflow-y: auto;">
-               <div class="list-group" id="songSelectList">
-                  <!-- Songs will be loaded here -->
+               <div class="modal-body">
+                  <div class="search-type-group d-flex align-items-center gap-3">
+                     <label>
+                        <input type="radio" name="searchType" id="nameSearch" value="name" checked>
+                        Name Search
+                     </label>
+                     <label>
+                        <input type="radio" name="searchType" id="bibleSearch" value="bible">
+                        Bible Reference
+                     </label>
+                     <label>
+                        <input type="radio" name="searchType" id="themeSearch" value="theme">
+                        Theme Search
+                     </label>
+                     <div id="maxResultsContainer" class="d-flex align-items-center gap-2" style="display: none !important;">
+                        <label for="maxResults">Max Results:</label>
+                        <input type="number" class="form-control form-control-sm" id="maxResults" value="6" min="1" max="20" style="width: 70px">
+                     </div>
+                  </div>
+                  <div class="search-controls mb-3">
+                     <div class="input-group">
+                        <button type="button" id="searchBtn" style="display:none">🔍</button>
+                        <input type="text" class="form-control" id="songSearch" 
+                            placeholder="Search by name or bible reference, or theme...">
+                     </div>
+                  </div>
+                  <div id="songListContainer" style="max-height: 400px; overflow-y: auto;">
+                     <div class="list-group" id="songSelectList">
+                        <!-- Songs will be loaded here -->
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
       </div>
-   </div>
-</div>
+
+      <!-- New Song Upload Modal -->
+      <div class="modal fade" id="newSongModal" tabindex="-1">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Add New Song</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="mb-3">
+                     <label for="newSongFile" class="form-label">PowerPoint File</label>
+                     <input type="file" class="form-control" id="newSongFile" accept=".pptx">
+                  </div>
+                  <div class="mb-3">
+                     <label for="newSongName" class="form-label">Song Name</label>
+                     <input type="text" class="form-control" id="newSongName">
+                  </div>
+                  <div id="newSongStatus" class="alert" style="display: none"></div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="uploadNewSongBtn">Upload</button>
+               </div>
+            </div>
+         </div>
+      </div>
 
       <!-- Upload Type Selection Modal -->
-    <div class="modal fade" id="uploadTypeModal" tabindex="-1" role="dialog" aria-labelledby="uploadTypeModalTitle" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="uploadTypeModalTitle">Choose Upload Type</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="list-group" role="list">
-              <button class="list-group-item list-group-item-action" data-upload-type="powerpoint" role="listitem">
-                <h6 class="mb-1">PowerPoint Presentation</h6>
-                <small>Upload a PPTX file and convert to Google Slides</small>
-              </button>
-              <button class="list-group-item list-group-item-action" data-upload-type="image" role="listitem">
-                <h6 class="mb-1">Image</h6>
-                <small>Upload an image and create a slide presentation</small>
-              </button>
-              <button class="list-group-item list-group-item-action" data-upload-type="slidemaker" role="listitem">
-                <h6 class="mb-1">Slide Maker</h6>
-                <small>Create a new Google Slides presentation</small>
-              </button>
+      <div class="modal fade" id="uploadTypeModal" tabindex="-1" role="dialog" aria-labelledby="uploadTypeModalTitle" >
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="uploadTypeModalTitle">Choose Upload Type</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="list-group" role="list">
+                     <button class="list-group-item list-group-item-action" data-upload-type="powerpoint" role="listitem">
+                        <h6 class="mb-1">PowerPoint Presentation</h6>
+                        <small>Upload a PPTX file and convert to Google Slides</small>
+                     </button>
+                     <button class="list-group-item list-group-item-action" data-upload-type="image" role="listitem">
+                        <h6 class="mb-1">Image</h6>
+                        <small>Upload an image and create a slide presentation</small>
+                     </button>
+                     <button class="list-group-item list-group-item-action" data-upload-type="slidemaker" role="listitem">
+                        <h6 class="mb-1">Slide Maker</h6>
+                        <small>Create a new Google Slides presentation</small>
+                     </button>
+                  </div>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
       </div>
-      </div>
-      <!-- Update the File Upload Modal in main.html -->
+
+      <!-- File Upload Modal -->
       <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalTitle">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="fileUploadModalTitle">Upload File</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="fileUploadModalTitle">Upload File</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="mb-3">
+                     <label for="fileInput" class="form-label">Choose file</label>
+                     <input type="file" class="form-control" id="fileInput" aria-describedby="fileTypeHelp">
+                     <div id="fileTypeHelp" class="form-text"></div>
+                  </div>
+                  <div id="uploadStatus" class="alert" style="display: none" role="alert"></div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="uploadFileBtn">Upload</button>
+               </div>
             </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="fileInput" class="form-label">Choose file</label>
-                <input type="file" class="form-control" id="fileInput" aria-describedby="fileTypeHelp">
-                <div id="fileTypeHelp" class="form-text"></div>
-              </div>
-              <div id="uploadStatus" class="alert" style="display: none" role="alert"></div>
-            </div>
-            <div class="modal-footer" > 
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-primary" id="uploadFileBtn">Upload</button>
-            </div>
-          </div>
-        </div>
+         </div>
       </div>
+
       <!-- Song Preview Modal -->
       <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalTitle">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="previewModalTitle">Preview Song</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="previewModalTitle">Preview Song</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="iframe-container">
+                     <iframe id="previewFrame" style="width: 100%; height: 500px; border: none;" 
+                             src="about:blank" 
+                             title="Preview Content"
+                             aria-label="Preview Content"></iframe>
+                  </div>
+               </div>
             </div>
-            <div class="modal-body">
-              <div class="iframe-container">
-                <iframe id="previewFrame" style="width: 100%; height: 500px; border: none;" 
-                        src="about:blank" 
-                        title="Preview Content"
-                        aria-label="Preview Content"></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
+         </div>
       </div>
 
-        <!-- Template Selection Modal -->
-          <div class="modal fade" id="templateSelectionModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
+      <!-- Template Selection Modal -->
+      <div class="modal fade" id="templateSelectionModal" tabindex="-1" role="dialog">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
                   <h5 class="modal-title">Choose Template</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+               </div>
+               <div class="modal-body">
                   <div class="list-group mb-3">
-                    <button class="list-group-item list-group-item-action" data-template-id="">
-                      <h6 class="mb-1">No Template</h6>
-                      <small>Create a blank presentation</small>
-                    </button>
-                    <!-- Template options will be inserted here -->
+                     <button class="list-group-item list-group-item-action" data-template-id="">
+                        <h6 class="mb-1">No Template</h6>
+                        <small>Create a blank presentation</small>
+                     </button>
+                     <!-- Template options will be inserted here -->
                   </div>
-                </div>
-              </div>
+               </div>
             </div>
-          </div>
-      <!-- Add this modal to main.html -->
-        <div class="modal fade" id="linkModal" tabindex="-1">
-          <div class="modal-dialog">
+         </div>
+      </div>
+
+      <!-- Link Modal -->
+      <div class="modal fade" id="linkModal" tabindex="-1">
+         <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Insert Link</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label for="linkText" class="form-label">Link Text</label>
-                  <input type="text" class="form-control" id="linkText">
-                </div>
-                <div class="mb-3">
-                  <label for="linkUrl" class="form-label">URL</label>
-                  <input type="url" class="form-control" id="linkUrl" placeholder="https://">
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="insertLinkBtn">Insert Link</button>
-              </div>
+               <div class="modal-header">
+                  <h5 class="modal-title">Insert Link</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+               </div>
+               <div class="modal-body">
+                  <div class="mb-3">
+                     <label for="linkText" class="form-label">Link Text</label>
+                     <input type="text" class="form-control" id="linkText">
+                  </div>
+                  <div class="mb-3">
+                     <label for="linkUrl" class="form-label">URL</label>
+                     <input type="url" class="form-control" id="linkUrl" placeholder="https://">
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="insertLinkBtn">Insert Link</button>
+               </div>
             </div>
-          </div>
-        </div>
+         </div>
+      </div>
 
-
+      <!-- Scripts -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
       <?!= include('Script'); ?>
       <?!= include('Script2'); ?>

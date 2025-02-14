@@ -1,4 +1,5 @@
 function doGet(e) {
+  Logger.log("Service Planner Started");
   const authResult = checkUserAuthorization();
   
   if (!authResult.authorized) {
@@ -1420,6 +1421,59 @@ function createNoticesFile(planDate) {
   } catch (error) {
     debugLog(`Error creating notices file: ${error.message}`);
     throw new Error(`Failed to create notices file: ${error.message}`);
+  }
+}
+
+// Add this new function to Code.js
+
+function addNewSongToDatabase(fileData, filename, newName) {
+  try {
+    debugLog(`Adding new song "${newName}" to database`);
+    
+    // Get settings for song database
+    const settings = getSettings();
+    const songDatabaseId = settings.SongDatabaseId;
+    
+    if (!songDatabaseId) {
+      throw new Error("Song database folder not configured in settings");
+    }
+    
+    // Create blob from base64 data
+    const bytes = Utilities.base64Decode(fileData.content);
+    const blob = Utilities.newBlob(bytes, fileData.mimeType, filename);
+    
+    // Upload to song database and convert to Google Slides
+    const folder = DriveApp.getFolderById(songDatabaseId);
+    const newFile = folder.createFile(blob);
+    
+    Utilities.sleep(2000); // Time delay to ensure file created ok
+    
+    const slideFile = Drive.Files.copy(
+      { 
+        title: newName, 
+        parents: [{ id: folder.getId() }],
+        mimeType: 'application/vnd.google-apps.presentation' 
+      },
+      newFile.getId(),
+      { convert: true }
+    );
+    
+    // Clean up original PPTX
+    newFile.setTrashed(true);
+    
+    // Get thumbnails
+    const thumbnailUrls = getThumbnailUrls(slideFile.id);
+    
+    return {
+      success: true,
+      fileId: slideFile.id,
+      name: newName,
+      thumbnailUrls: thumbnailUrls
+    };
+    
+  } catch (error) {
+    debugLog("Error adding song to database: " + error.message);
+    throw new Error("Failed to add song to database: " + error.message);
   }
 }
 

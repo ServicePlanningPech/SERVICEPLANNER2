@@ -22,7 +22,6 @@ let isNameSearch = true;
 /* --------------------------------------------------------------------------------------------------- */
 /* - Here's where it all starts                                                                      - */
 /* --------------------------------------------------------------------------------------------------- */
-//document.addEventListener('DOMContentLoaded', function() { 
 window.onload = async function() {  
   // Show initial loading message
   showToast("Checking authorization...", 5);
@@ -112,7 +111,6 @@ function handleError(error) {
   alert('An error occurred: ' + error.message);
 }
 
-
 // Navigation functions
 function showSection(sectionId) {
   document.querySelectorAll('.app-section').forEach(section => {
@@ -120,8 +118,6 @@ function showSection(sectionId) {
   });
   document.getElementById(sectionId).classList.add('active');
 }
-
-
 
 function initializeAll() {
   if (isInitialized) return;
@@ -214,7 +210,6 @@ function showModal(modalId) {
   bsModal.show();
 }
 
-
 async function loadCurrentServiceOrder(folderId) {
   debugLog("Loading service order for folder: " + folderId);
   showLoading(true, 'Loading service plan...');
@@ -256,8 +251,6 @@ async function loadCurrentServiceOrder(folderId) {
 }
 
 function initializeEventListeners() {
-  //debugLog("Initializing event listeners");
-  
   // Plan list event listeners
   document.getElementById('planListBody').addEventListener('click', handlePlanSelection);
   document.getElementById('planListBody').addEventListener('dblclick', handlePlanDoubleClick);
@@ -341,7 +334,6 @@ function handleEditPlan() {
   showSection('planEdit');
 }
 
-// Update the displayPlans function in Script.html
 function displayPlans(plans) {
   const tbody = document.getElementById('planListBody');
   
@@ -520,8 +512,6 @@ async function deleteThisPlan() {
   showLoading(true, 'Deleting plan...');
   await deletePlan(selectedPlanId)
     .then(result => {
-  //    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-  //    modal.hide();
       selectedPlanId = null;
       document.getElementById('editPlanBtn').disabled = true;
       document.getElementById('deletePlanBtn').disabled = true;
@@ -585,7 +575,6 @@ async function saveServiceOrder() {
   const serviceNotes = document.getElementById('serviceNotes').innerHTML.trim();
   const additionalEmails = document.getElementById('additionalEmails').value.trim();
 
-//HERE
   const serviceOrder = {
     orderOfService: items,
     comments: serviceNotes,
@@ -606,7 +595,6 @@ async function saveServiceOrder() {
 }
 
 function initializeServiceItemsTable() {
-  //debugLog("Initializing service items table");
   const tbody = document.querySelector('#serviceItemsTable tbody');
   tbody.innerHTML = '';
 
@@ -706,7 +694,6 @@ function updateContextMenu() {
   }
 }
 
-// Modified setupContextMenu function
 function setupContextMenu() {
   const menu = document.getElementById('itemTypeMenu');
   
@@ -772,7 +759,6 @@ function setupContextMenu() {
     menu.setAttribute('data-initialized', 'true');
   }
 }
-
 function showContextMenu(e, cell) {
   const menu = document.getElementById('itemTypeMenu');
   document.querySelectorAll('.item-type').forEach(cell => cell.classList.remove('active'));
@@ -794,7 +780,6 @@ function showContextMenu(e, cell) {
 }
 
 function hideContextMenu() {
-  //debugLog("Hiding context menu");
   const menu = document.getElementById('itemTypeMenu');
   menu.style.display = 'none';
   document.querySelectorAll('.item-type').forEach(cell => cell.classList.remove('active'));
@@ -802,7 +787,6 @@ function hideContextMenu() {
 }
 
 function initializeDragAndDrop() {
-  //debugLog("Initializing drag and drop");
   const tbody = document.querySelector('#serviceItemsTable tbody');
   let draggedRow = null;
   let startIndex = -1;
@@ -943,8 +927,6 @@ function showUploadTypeModal() {
   showModal('uploadTypeModal');
 }
 
-
-
 async function handleUploadTypeSelection(e) {
   const button = e.currentTarget;
   currentUploadType = button.dataset.uploadType;
@@ -983,15 +965,12 @@ function configureFileUploadModal() {
   // Show upload modal
   const modal = new bootstrap.Modal(document.getElementById('fileUploadModal'));
   modal.show();
-
-
 }
 
 async function handleFileUpload() {
   try {
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];
-      
       
       if (!file) {
         showUploadStatus('Please select a file', 'warning');
@@ -1001,7 +980,6 @@ async function handleFileUpload() {
       showUploadStatus('Uploading...', 'info');
       
       // Create a new FileReader
-    
       const reader = new FileReader();
       
       reader.onload = async function(e) {
@@ -1015,7 +993,6 @@ async function handleFileUpload() {
             .catch(error => {
               handleUploadError(error);
             }); 
-
       };
       
       reader.onerror = function(error) {
@@ -1029,7 +1006,6 @@ async function handleFileUpload() {
     handleUploadError(error);
   }
 }
-//HERE
 async function handleSlideMakerUpload() {
   const itemDetail = activeRow.querySelector('.item-detail').textContent.trim();
   const typeCell = activeRow.querySelector('.item-type');
@@ -1303,7 +1279,6 @@ function setupEditingOverlay(result) {
             refreshGallery();
             triggerAutoSave();
           }
-       
       }
     };
 }
@@ -1327,7 +1302,6 @@ function cleanupEditingState() {
         popupOverlay.remove();
     }
 }
-
 async function handleUploadSuccess(result) {
   // Close modal
   const uploadModal = bootstrap.Modal.getInstance(document.getElementById('fileUploadModal'));
@@ -1366,11 +1340,8 @@ function handleUploadError(error) {
   showUploadStatus('Upload failed: ' + error.message, 'danger');
 }
 
-
 // Add new function to handle item type changes
 function setupItemTypeHandlers() {
-  //debugLog("Setting up item type handlers");
-  
   const tbody = document.querySelector('#serviceItemsTable tbody');
   
   // Handle double-click on item type
@@ -1409,6 +1380,37 @@ function setupSongSelectionHandlers() {
   songSelectList.addEventListener('dblclick', handleSongDoubleClick);
 
   document.getElementById('chooseSongBtn').addEventListener('click', handleSongChoice);
+  
+  // Add event listener for the Add New Song button
+  document.getElementById('addNewSongBtn').addEventListener('click', function() {
+    const songSelectModal = bootstrap.Modal.getInstance(document.getElementById('songSelectModal'));
+    songSelectModal.hide();
+    showNewSongUploadModal();
+  });
+}
+
+function showNewSongUploadModal() {
+  const modal = new bootstrap.Modal(document.getElementById('newSongModal'));
+  
+  // Reset form and status
+  const fileInput = document.getElementById('newSongFile');
+  const nameInput = document.getElementById('newSongName');
+  const statusDiv = document.getElementById('newSongStatus');
+  
+  fileInput.value = '';
+  nameInput.value = '';
+  statusDiv.style.display = 'none';
+  
+  // Set up file input change handler
+  fileInput.addEventListener('change', function() {
+    if (this.files[0]) {
+      // Set default name from filename without extension
+      const defaultName = this.files[0].name.replace(/\.pptx$/, '');
+      nameInput.value = defaultName;
+    }
+  });
+  
+  modal.show();
 }
 
 function handleSongSelection(e) {
@@ -1493,72 +1495,6 @@ async function handleSongChoice() {
   }
 }
 
-
-
-async function refreshGallery() {
- //debugLog("Refreshing gallery");
-  
-  // Clear the gallery
-  const gallery = document.getElementById('slidesGallery');
-  gallery.innerHTML = '';
-  
-  let slideNumber = 1; // Keep track of overall slide numbers
-  
-  // Process all rows in the service items table
-  const rows = document.querySelectorAll('#serviceItemsTable tbody tr');
-  
-  for (const row of rows) {
-    const beforeCheckbox = row.querySelector('.slide-before-checkbox');
-    const afterCheckbox = row.querySelector('.slide-after-checkbox');
-    const turlsCell = row.querySelector('.item-tUrls');
-    
-    // Add blank slide before if checkbox is checked
-    if (beforeCheckbox && beforeCheckbox.checked) {
-      const div = document.createElement('div');
-      div.className = 'slide-thumbnail';
-      div.innerHTML = `
-        <div style="height: 100%; background-color: white;"></div>
-        <div class="slide-number">${slideNumber++}</div>
-      `;
-      gallery.appendChild(div);
-    }
-    
-    // Add song/presentation slides if tUrls exists
-    if (turlsCell && turlsCell.textContent) {
-      try {
-        const thumbnailUrls = JSON.parse(turlsCell.textContent);
-        if (thumbnailUrls && thumbnailUrls.length > 0) {
-          for (let i = 0; i < thumbnailUrls.length; i++) {
-            const div = document.createElement('div');
-            div.className = 'slide-thumbnail is-song';
-            div.innerHTML = `
-              <img src="${thumbnailUrls[i]}" alt="Slide ${slideNumber}" loading="lazy">
-              <div class="slide-number">${slideNumber++}</div>
-            `;
-            gallery.appendChild(div);
-          }
-        }
-      } catch (error) {
-        debugLog("Error processing thumbnails: " + error);
-      }
-    }
-    
-    // Add blank slide after if checkbox is checked
-    if (afterCheckbox && afterCheckbox.checked) {
-      const div = document.createElement('div');
-      div.className = 'slide-thumbnail';
-      div.innerHTML = `
-        <div style="height: 100%; background-color: white;"></div>
-        <div class="slide-number">${slideNumber++}</div>
-      `;
-      gallery.appendChild(div);
-    }
-  }
-  
-  //debugLog(`Gallery refresh complete with ${slideNumber - 1} total slides`);
-}
-
-
 function displaySongModal() {
   const existingModal = bootstrap.Modal.getInstance(document.getElementById('songSelectModal'));
   if (existingModal) {
@@ -1597,8 +1533,6 @@ function displaySongModal() {
   }
   
   // Enable/disable API search options based on global settings
-
-  
   const hasAPISettings = !!settings.apiKey;
   document.getElementById('bibleSearch').disabled = !hasAPISettings;
   document.getElementById('themeSearch').disabled = !hasAPISettings;
@@ -1623,9 +1557,7 @@ function displaySongList(songs) {
     </div>
   `).join('');
 }
-
 function showPreview(id, title) {
- 
   const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
   const frame = document.getElementById('previewFrame');
   
@@ -1639,7 +1571,6 @@ function resetSongModal() {
   document.getElementById('songSearch').value = '';
   document.getElementById('chooseSongBtn').disabled = true;
   selectedSong = null;
-  //displaySongList(songListData); DONT THINK THIS IS NEEDED HERE
 }
 
 function resetFileModal() {
@@ -1683,7 +1614,6 @@ async function loadServicePlans() {
   displayPlans(plans);
   showLoading(false);
 }
-
 
 async function loadSongs() {
   if (songsLoaded) {return};
@@ -1910,9 +1840,7 @@ async function populateServiceItems(items) {
     }
   }
 }
-
 function reorderItemNumbers() {
-  //debugLog("Reordering item numbers");
   const rows = document.querySelectorAll('#serviceItemsTable tbody tr');
   rows.forEach((row, index) => {
     const itemNumberCell = row.querySelector('.item-number');
@@ -1923,7 +1851,6 @@ function reorderItemNumbers() {
 }
 
 function reapplyAlternatingColors() {
-  //debugLog("Reapplying alternating colors");
   const rows = document.querySelectorAll('#serviceItemsTable tbody tr');
   rows.forEach((row, index) => {
     row.classList.remove('table-light');
@@ -1934,14 +1861,12 @@ function reapplyAlternatingColors() {
 }
 
 function triggerAutoSave() {
-
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
     saveServiceOrder();
   }, 5000);
 }
 
-// Add new function to manage upload button visibility
 function updateUploadButton(row, shouldDisable) {
   const uploadBtn = row.querySelector('.upload-btn');
   if (uploadBtn) {
@@ -1965,22 +1890,18 @@ function initializeUploadButtons() {
     
     // Initially disable upload button
     if (uploadBtn) {
-      console.log("UPBUTTON DISABLED");
       uploadBtn.disabled = true;
       uploadBtn.style.opacity = '0.5';
     }
     
     // Check initial state
     if (typeCell && typeCell.textContent.trim()) {
-      console.log("UPBUTTON ENABLED");
       enableUploadButton(row);
     }
   });
 }
 
-// Add this function to enable/disable upload button
 function enableUploadButton(row) {
-  console.log(`BUTTON ENABLED ON ROW`);
   const uploadBtn = row.querySelector('.upload-btn');
   if (uploadBtn) {
     uploadBtn.disabled = false;
@@ -1995,6 +1916,7 @@ function disableUploadButton(row) {
     uploadBtn.style.opacity = '0.5';
   }
 }
+
 function initializeEditButtons() {
   const tbody = document.querySelector('#serviceItemsTable tbody');
   const rows = tbody.querySelectorAll('tr');
@@ -2123,6 +2045,65 @@ function handleSlideEdit(editUrl, fileId) {
   }, 1000);
 }
 
+async function refreshGallery() {
+  // Clear the gallery
+  const gallery = document.getElementById('slidesGallery');
+  gallery.innerHTML = '';
+  
+  let slideNumber = 1; // Keep track of overall slide numbers
+  
+  // Process all rows in the service items table
+  const rows = document.querySelectorAll('#serviceItemsTable tbody tr');
+  
+  for (const row of rows) {
+    const beforeCheckbox = row.querySelector('.slide-before-checkbox');
+    const afterCheckbox = row.querySelector('.slide-after-checkbox');
+    const turlsCell = row.querySelector('.item-tUrls');
+    
+    // Add blank slide before if checkbox is checked
+    if (beforeCheckbox && beforeCheckbox.checked) {
+      const div = document.createElement('div');
+      div.className = 'slide-thumbnail';
+      div.innerHTML = `
+        <div style="height: 100%; background-color: white;"></div>
+        <div class="slide-number">${slideNumber++}</div>
+      `;
+      gallery.appendChild(div);
+    }
+    
+    // Add song/presentation slides if tUrls exists
+    if (turlsCell && turlsCell.textContent) {
+      try {
+        const thumbnailUrls = JSON.parse(turlsCell.textContent);
+        if (thumbnailUrls && thumbnailUrls.length > 0) {
+          for (let i = 0; i < thumbnailUrls.length; i++) {
+            const div = document.createElement('div');
+            div.className = 'slide-thumbnail is-song';
+            div.innerHTML = `
+              <img src="${thumbnailUrls[i]}" alt="Slide ${slideNumber}" loading="lazy">
+              <div class="slide-number">${slideNumber++}</div>
+            `;
+            gallery.appendChild(div);
+          }
+        }
+      } catch (error) {
+        debugLog("Error processing thumbnails: " + error);
+      }
+    }
+    
+    // Add blank slide after if checkbox is checked
+    if (afterCheckbox && afterCheckbox.checked) {
+      const div = document.createElement('div');
+      div.className = 'slide-thumbnail';
+      div.innerHTML = `
+        <div style="height: 100%; background-color: white;"></div>
+        <div class="slide-number">${slideNumber++}</div>
+      `;
+      gallery.appendChild(div);
+    }
+  }
+}
+
 async function getSettings() {
   await callGetSettings()
     .then(result => {
@@ -2142,6 +2123,122 @@ async function getSettings() {
        }); 
 }
 
+async function updateStorageInfo() {
+   try {
+    await getStorageInfo()
+    .then(result => {
+      info = result;
+    })
+    .catch(error => {
+        alert('Get Drive Storage Error:' + error);
+    }); 
+ 
+    document.getElementById('storageUsed').textContent = info.used;
+    document.getElementById('storageTotal').textContent = info.total;
+    document.getElementById('storageFree').textContent = info.free;
+    document.getElementById('storageProgress').style.width = `${info.percentUsed}%`;
+    document.getElementById('storageInfo').style.display = 'block';
+  } catch (error) {
+    console.error('Failed to update storage info:', error);
+  }
+}
 
-
+// Add event listener for the upload button in the new song modal
+document.getElementById('uploadNewSongBtn').addEventListener('click', async function() {
+  const fileInput = document.getElementById('newSongFile');
+  const nameInput = document.getElementById('newSongName');
+  const statusDiv = document.getElementById('newSongStatus');
+  
+  try {
+    const file = fileInput.files[0];
+    const newName = nameInput.value.trim();
+    
+    if (!file) {
+      throw new Error('Please select a PowerPoint file');
+    }
+    if (!newName) {
+      throw new Error('Please enter a name for the song');
+    }
+    
+    // Show loading status
+    statusDiv.className = 'alert alert-info';
+    statusDiv.textContent = 'Uploading song to database...';
+    statusDiv.style.display = 'block';
+    
+    // Read file as base64
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const content = e.target.result.split(',')[1];
+      
+      try {
+        // Add to song database
+        const result = await callAddNewSongToDatabase({
+          content: content,
+          mimeType: file.type,
+          name: file.name
+        }, file.name, newName);
+        
+        if (result.success) {
+          // Update status
+          statusDiv.className = 'alert alert-success';
+          statusDiv.textContent = 'Song added to database successfully!';
+          
+          // Add to song list data
+          songListData.push({
+            name: result.name,
+            id: result.fileId,
+            sanitizedName: result.name
+          });
+          
+          // Sort song list
+          songListData.sort((a, b) => a.name.localeCompare(b.name));
+          
+          // Select the new song
+          selectedSong = {
+            name: result.name,
+            id: result.fileId
+          };
+          
+          // Close new song modal after delay
+          setTimeout(() => {
+            const newSongModal = bootstrap.Modal.getInstance(document.getElementById('newSongModal'));
+            newSongModal.hide();
+            
+            // Reset modal
+            fileInput.value = '';
+            nameInput.value = '';
+            statusDiv.style.display = 'none';
+            
+            // Reopen song selection modal and update list
+            const songSelectModal = new bootstrap.Modal(document.getElementById('songSelectModal'));
+            songSelectModal.show();
+            displaySongList(songListData);
+            
+            // Highlight the newly added song
+            setTimeout(() => {
+              const newSongElement = document.querySelector(`[data-id="${result.fileId}"]`);
+              if (newSongElement) {
+                newSongElement.classList.add('active');
+                newSongElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+            
+            // Handle song choice
+            handleSongChoice();
+          }, 1500);
+        }
+      } catch (error) {
+        statusDiv.className = 'alert alert-danger';
+        statusDiv.textContent = error.message;
+      }
+    };
+    
+    reader.readAsDataURL(file);
+    
+  } catch (error) {
+    statusDiv.className = 'alert alert-danger';
+    statusDiv.textContent = error.message;
+    statusDiv.style.display = 'block';
+  }
+});
 </script>
