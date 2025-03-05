@@ -56,8 +56,9 @@ function checkUserAuthorization() {
         authorized: false,
         message: "Could not determine user email"
       };
+    
     }
-
+     Logger.log('User: ' + userEmail + ' invoked ServicePlanner2');
     // Get settings to find distribution list
     const settings = getSettings();
     const emailDistId = settings.EmailDistId;
@@ -551,6 +552,7 @@ function getSongList() {
 }
 
 function debugLog(message) {
+  
   try {
     // Check cache for debug setting
     const cache = CacheService.getUserCache();
